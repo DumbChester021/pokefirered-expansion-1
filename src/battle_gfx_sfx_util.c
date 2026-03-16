@@ -115,11 +115,11 @@ static const struct CompressedSpriteSheet sSpriteSheets_HealthBar[MAX_BATTLERS_C
 const struct SpritePalette sSpritePalettes_HealthBoxHealthBar[2] =
 {
     {
-        .data = gBattleInterface_Healthbox_Pal,
+        .data = gBattleInterface_BallStatusBarPal,
         .tag = TAG_HEALTHBOX_PAL,
     },
     {
-        .data = gBattleInterface_Healthbar_Pal,
+        .data = gBattleInterface_BallDisplayPal,
         .tag = TAG_HEALTHBAR_PAL,
     },
 };
@@ -732,23 +732,23 @@ void BattleGfxSfxDummy2(u16 species)
 {
 }
 
-void DecompressTrainerFrontPic(u16 frontPicId, enum BattlerId battler)
+void DecompressTrainerFrontPic(enum TrainerPicID trainerPicId, enum BattlerId battler)
 {
     enum BattlerPosition position = GetBattlerPosition(battler);
-    DecompressDataWithHeaderWram(GetTrainerFrontPicData(frontPicId), gMonSpritesGfxPtr->spritesGfx[position]);
-    LoadSpritePaletteWithTag(GetTrainerFrontPicPalette(frontPicId), frontPicId);
+    DecompressDataWithHeaderWram(GetTrainerFrontPicData(trainerPicId), gMonSpritesGfxPtr->spritesGfx[position]);
+    LoadSpritePaletteWithTag(GetTrainerFrontPicPalette(trainerPicId), trainerPicId);
 }
 
-void DecompressTrainerBackPic(enum TrainerPicID backPicId, enum BattlerId battler)
+void DecompressTrainerBackPic(enum TrainerPicID trainerPicId, enum BattlerId battler)
 {
     enum BattlerPosition position = GetBattlerPosition(battler);
-    CopyTrainerBackspriteFramesToDest(backPicId, gMonSpritesGfxPtr->spritesGfx[position]);
-    LoadSpritePaletteWithTag(GetTrainerBackPicPalette(backPicId), backPicId);
+    CopyTrainerBackspriteFramesToDest(trainerPicId, gMonSpritesGfxPtr->spritesGfx[position]);
+    LoadSpritePaletteWithTag(GetTrainerBackPicPalette(trainerPicId), trainerPicId);
 }
 
-void FreeTrainerFrontPicPalette(u16 frontPicId)
+void FreeTrainerFrontPicPalette(enum TrainerPicID trainerPicId)
 {
-    FreeSpritePaletteByTag(frontPicId);
+    FreeSpritePaletteByTag(trainerPicId);
 }
 
 // Unused.
@@ -787,7 +787,6 @@ bool8 BattleLoadAllHealthBoxesGfx(u8 state)
         {
             LoadSpritePalette(&sSpritePalettes_HealthBoxHealthBar[0]);
             LoadSpritePalette(&sSpritePalettes_HealthBoxHealthBar[1]);
-            LoadIndicatorSpritesGfx();
             CategoryIcons_LoadSpritesGfx();
         }
         else if (!IsDoubleBattle())
@@ -854,7 +853,7 @@ bool8 BattleLoadAllHealthBoxesGfx(u8 state)
 
 void LoadBattleBarGfx(u8 unused)
 {
-    DecompressDataWithHeaderWram(gInterfaceGfx_HPNumbers, gMonSpritesGfxPtr->barFontGfx);
+    DecompressDataWithHeaderWram(gBattleInterfaceGfx_BattleBar, gMonSpritesGfxPtr->barFontGfx);
 }
 
 bool8 BattleInitAllSprites(u8 *state1, u8 *battler)
@@ -1048,12 +1047,10 @@ void BattleLoadSubstituteOrMonSpriteGfx(enum BattlerId battler, bool8 loadMonSpr
         else
             position = GetBattlerPosition(battler);
 
-        if (IsContest())
-            DecompressDataWithHeaderVram(gSubstituteDollBackGfx, gMonSpritesGfxPtr->spritesGfx[position]);
-        else if (!IsOnPlayerSide(battler))
-            DecompressDataWithHeaderVram(gSubstituteDollFrontGfx, gMonSpritesGfxPtr->spritesGfx[position]);
+        if (!IsOnPlayerSide(battler))
+            DecompressDataWithHeaderVram(gBattleAnimSpriteGfx_Substitute, gMonSpritesGfxPtr->spritesGfx[position]);
         else
-            DecompressDataWithHeaderVram(gSubstituteDollBackGfx, gMonSpritesGfxPtr->spritesGfx[position]);
+            DecompressDataWithHeaderVram(gBattleAnimSpriteGfx_SubstituteBack, gMonSpritesGfxPtr->spritesGfx[position]);
 
         for (i = 1; i < 4; i++)
         {
@@ -1061,7 +1058,7 @@ void BattleLoadSubstituteOrMonSpriteGfx(enum BattlerId battler, bool8 loadMonSpr
         }
 
         palOffset = OBJ_PLTT_ID(battler);
-        LoadPalette(gSubstituteDollPal, palOffset, PLTT_SIZE_4BPP);
+        LoadPalette(gBattleAnimSpritePal_Substitute, palOffset, PLTT_SIZE_4BPP);
     }
     else
     {
@@ -1399,13 +1396,13 @@ void HideBattlerShadowSprite(enum BattlerId battler)
 // Color the background tiles surrounding the action selection and move windows
 void FillAroundBattleWindows(void)
 {
-    u16 *vramPtr = (u16 *)(BG_VRAM + 0x240);
+    u16 *vramPtr = (u16 *)(VRAM + 0x240);
     s32 i;
     s32 j;
 
-    for (i = 0; i < 9; ++i)
+    for (i = 0; i < 9; i++)
     {
-        for (j = 0; j < 16; ++vramPtr, ++j)
+        for (j = 0; j < 16; j++)
         {
             if (!(*vramPtr & 0xF000))
                 *vramPtr |= 0xF000;
@@ -1415,23 +1412,7 @@ void FillAroundBattleWindows(void)
                 *vramPtr |= 0x00F0;
             if (!(*vramPtr & 0x000F))
                 *vramPtr |= 0x000F;
-        }
-    }
-
-    // 18 tiles at 0x06000600
-    vramPtr = (u16 *)(BG_VRAM + 0x600);
-    for (i = 0; i < 18; ++i)
-    {
-        for (j = 0; j < 16; ++vramPtr, ++j)
-        {
-            if (!(*vramPtr & 0xF000))
-                *vramPtr |= 0x6000;
-            if (!(*vramPtr & 0x0F00))
-                *vramPtr |= 0x0600;
-            if (!(*vramPtr & 0x00F0))
-                *vramPtr |= 0x0060;
-            if (!(*vramPtr & 0x000F))
-                *vramPtr |= 0x0006;
+            vramPtr++;
         }
     }
 }

@@ -78,6 +78,7 @@ static void CB2_ReshowBattleScreenAfterMenu(void)
     case 6:
         if (BattleLoadAllHealthBoxesGfx(gBattleScripting.reshowHelperState))
         {
+            LoadIndicatorSpritesGfx();
             gBattleScripting.reshowHelperState = 0;
         }
         else
@@ -330,7 +331,7 @@ void CreateBattlerSprite(u32 battler)
 
             SetMultiuseSpriteTemplateToTrainerBack(trainerPicId, position);
             gBattlerSpriteIds[battler] = CreateSprite(&gMultiuseSpriteTemplate, 80, (8 - GetTrainerBackPicCoords(trainerPicId)->size) * 4 + 80, GetBattlerSpriteSubpriority(0));
-            gSprites[gBattlerSpriteIds[battler]].oam.paletteNum = battler;
+            gSprites[gBattlerSpriteIds[battler]].oam.paletteNum = IndexOfSpritePaletteTag(trainerPicId);
             gSprites[gBattlerSpriteIds[battler]].callback = SpriteCallbackDummy;
             gSprites[gBattlerSpriteIds[battler]].data[0] = battler;
         }
@@ -338,7 +339,7 @@ void CreateBattlerSprite(u32 battler)
         {
             SetMultiuseSpriteTemplateToTrainerBack(TRAINER_PIC_OLD_MAN, GetBattlerPosition(0));
             gBattlerSpriteIds[battler] = CreateSprite(&gMultiuseSpriteTemplate, 80, (8 - GetTrainerBackPicCoords(TRAINER_PIC_OLD_MAN)->size) * 4 + 80, GetBattlerSpriteSubpriority(0));
-            gSprites[gBattlerSpriteIds[battler]].oam.paletteNum = (8 + battler / 2);
+            gSprites[gBattlerSpriteIds[battler]].oam.paletteNum = IndexOfSpritePaletteTag(TRAINER_PIC_OLD_MAN);
             gSprites[gBattlerSpriteIds[battler]].callback = SpriteCallbackDummy;
             gSprites[gBattlerSpriteIds[battler]].data[0] = battler;
         }
