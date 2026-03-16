@@ -527,7 +527,7 @@ static bool32 WaitWarpFadeOutScreen(void)
 
 bool32 FieldFadeTransitionBackgroundEffectIsFinished(void)
 {
-    if (IsWeatherNotFadingIn() == TRUE && ForestMapPreviewScreenIsRunning())
+    if (IsWeatherNotFadingIn() == TRUE && !ForestMapPreviewScreenIsRunning())
         return TRUE;
     else
         return FALSE;
@@ -844,7 +844,7 @@ static void Task_StairWarp(u8 taskId)
     case 0:
         LockPlayerFieldControls();
         FreezeObjectEvents();
-        CameraObjectReset2();
+        CameraObjectFreeze();
         data[0]++;
         break;
     case 1:
@@ -944,7 +944,7 @@ static void Task_ExitStairs(u8 taskId)
     default:
         if (FieldFadeTransitionBackgroundEffectIsFinished() == TRUE)
         {
-            CameraObjectReset1();
+            CameraObjectReset();
             UnlockPlayerFieldControls();
             DestroyTask(taskId);
         }
