@@ -1,28 +1,32 @@
 #include "global.h"
-#include "gflib.h"
+#include "bg.h"
 #include "confetti_util.h"
-#include "decompress.h"
-#include "scanline_effect.h"
-#include "task.h"
-#include "save.h"
-#include "data.h"
-#include "m4a.h"
-#include "hall_of_fame.h"
-#include "pc_screen_effect.h"
-#include "strings.h"
 #include "credits.h"
+#include "data.h"
+#include "decompress.h"
 #include "event_data.h"
-#include "overworld.h"
-#include "trainer_pokemon_sprites.h"
-#include "text_window.h"
 #include "field_screen_effect.h"
-#include "menu.h"
-#include "string_util.h"
-#include "trig.h"
-#include "random.h"
+#include "gpu_regs.h"
 #include "graphics.h"
-#include "constants/songs.h"
+#include "hall_of_fame.h"
+#include "m4a.h"
+#include "malloc.h"
+#include "menu.h"
+#include "overworld.h"
+#include "palette.h"
+#include "pc_screen_effect.h"
+#include "random.h"
+#include "save.h"
+#include "scanline_effect.h"
+#include "sound.h"
+#include "string_util.h"
+#include "strings.h"
+#include "task.h"
+#include "text_window.h"
+#include "trainer_pokemon_sprites.h"
+#include "trig.h"
 #include "constants/maps.h"
+#include "constants/songs.h"
 
 #define HALL_OF_FAME_MAX_TEAMS 50
 #define HALL_OF_FAME_BG_PAL    RGB(22, 24, 29)
@@ -524,7 +528,7 @@ static void Task_Hof_DisplayMon(u8 taskId)
         dstY = sHallOfFame_MonHalfTeamPositions[currMonId][3];
     }
 
-    spriteId = CreateMonPicSprite(currMon->species, currMon->isShiny, currMon->personality, 1, srcX, srcY, currMonId, 0xFFFF);
+    spriteId = CreateMonFrontPicSprite(currMon->species, currMon->isShiny, currMon->personality, srcX, srcY, currMonId, TAG_NONE);
     gSprites[spriteId].data[1] = dstX;
     gSprites[spriteId].data[2] = dstY;
     gSprites[spriteId].data[0] = 0;
@@ -634,7 +638,7 @@ static void Task_Hof_SpawnPlayerPic(u8 taskId)
     ShowBg(0);
     ShowBg(1);
     ShowBg(3);
-    gTasks[taskId].data[4] = CreateTrainerPicSprite(PlayerGenderToFrontTrainerPicId(gSaveBlock2Ptr->playerGender), TRUE, 0x78, 0x48, 6, 0xFFFF);
+    gTasks[taskId].data[4] = CreateTrainerFrontPicSprite(PlayerGenderToFrontTrainerPicId(gSaveBlock2Ptr->playerGender), 120, 72, 6);
     AddWindow(&sWindowTemplate);
     LoadStdWindowGfx(1, 0x21D, BG_PLTT_ID(13));
     gTasks[taskId].data[3] = 120;
@@ -837,7 +841,7 @@ static void Task_HofPC_DrawSpritesPrintText(u8 taskId)
                 posY = sHallOfFame_MonHalfTeamPositions[i][3];
             }
 
-            spriteId = CreateMonPicSprite(currMon->species, currMon->isShiny, currMon->personality, TRUE, posX, posY, i, 0xFFFF);
+            spriteId = CreateMonFrontPicSprite(currMon->species, currMon->isShiny, currMon->personality, posX, posY, i, TAG_NONE);
             gSprites[spriteId].oam.priority = 1;
             gTasks[taskId].data[5 + i] = spriteId;
         }
@@ -1170,7 +1174,7 @@ static void HofInit_ResetGpuBuffersAndLoadConfettiGfx(void)
 static void Hof_InitBgs(void)
 {
     ResetBgsAndClearDma3BusyFlags(0);
-    InitBgsFromTemplates(0, sHof_BgTemplates, NELEMS(sHof_BgTemplates));
+    InitBgsFromTemplates(0, sHof_BgTemplates, ARRAY_COUNT(sHof_BgTemplates));
     SetBgTilemapBuffer(1, sHofGfxPtr->tilemap1);
     SetBgTilemapBuffer(3, sHofGfxPtr->tilemap2);
     ChangeBgX(0, 0, 0);

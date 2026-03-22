@@ -1,17 +1,20 @@
 #include "global.h"
-
-#include "gflib.h"
-
+#include "bg.h"
+#include "dma3.h"
 #include "event_data.h"
-#include "pokedex.h"
-#include "menu.h"
-#include "rtc.h"
+#include "gpu_regs.h"
 #include "link.h"
+#include "menu.h"
+#include "mystery_gift_menu.h"
 #include "oak_speech.h"
 #include "overworld.h"
-#include "mystery_gift_menu.h"
+#include "palette.h"
+#include "pokedex.h"
+#include "rtc.h"
 #include "save.h"
 #include "scanline_effect.h"
+#include "sound.h"
+#include "string_util.h"
 #include "strings.h"
 #include "task.h"
 #include "text_window.h"
@@ -82,7 +85,7 @@ static const struct WindowTemplate sWindowTemplate[] = {
         .height = 2,
         .paletteNum = 15,
         .baseBlock = 0x001
-    }, 
+    },
     [MAIN_MENU_WINDOW_CONTINUE] = {
         .bg = 0,
         .tilemapLeft = 3,
@@ -91,7 +94,7 @@ static const struct WindowTemplate sWindowTemplate[] = {
         .height = 10,
         .paletteNum = 15,
         .baseBlock = 0x001
-    }, 
+    },
     [MAIN_MENU_WINDOW_NEWGAME] = {
         .bg = 0,
         .tilemapLeft = 3,
@@ -100,7 +103,7 @@ static const struct WindowTemplate sWindowTemplate[] = {
         .height = 2,
         .paletteNum = 15,
         .baseBlock = 0x0f1
-    }, 
+    },
     [MAIN_MENU_WINDOW_MYSTERYGIFT] = {
         .bg = 0,
         .tilemapLeft = 3,
@@ -109,7 +112,7 @@ static const struct WindowTemplate sWindowTemplate[] = {
         .height = 2,
         .paletteNum = 15,
         .baseBlock = 0x121
-    }, 
+    },
     [MAIN_MENU_WINDOW_ERROR] = {
         .bg = 0,
         .tilemapLeft = 3,
@@ -118,7 +121,7 @@ static const struct WindowTemplate sWindowTemplate[] = {
         .height = 4,
         .paletteNum = 15,
         .baseBlock = 0x001
-    }, 
+    },
     [MAIN_MENU_WINDOW_COUNT] = DUMMY_WIN_TEMPLATE
 };
 
@@ -184,7 +187,7 @@ static bool32 MainMenuGpuInit(u8 a0)
     FreeAllSpritePalettes();
     ResetPaletteFade();
     ResetBgsAndClearDma3BusyFlags(FALSE);
-    InitBgsFromTemplates(0, sBgTemplate, NELEMS(sBgTemplate));
+    InitBgsFromTemplates(0, sBgTemplate, ARRAY_COUNT(sBgTemplate));
     ChangeBgX(0, 0, 0);
     ChangeBgY(0, 0, 0);
     ChangeBgX(1, 0, 0);
@@ -285,7 +288,7 @@ static void Task_MainMenuCheckBattery(u8 taskId)
         SetGpuReg(REG_OFFSET_BLDCNT, BLDCNT_TGT1_BG0 | BLDCNT_TGT1_BG1 | BLDCNT_TGT1_BG2 | BLDCNT_TGT1_BG3 | BLDCNT_TGT1_OBJ | BLDCNT_TGT1_BD | BLDCNT_EFFECT_DARKEN);
         SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(0, 0));
         SetGpuReg(REG_OFFSET_BLDY, 7);
-        
+
         if (!(RtcGetErrorStatus() & RTC_ERR_FLAG_MASK))
         {
             if(gTasks[taskId].tMenuType == MAIN_MENU_NEWGAME) {
@@ -750,78 +753,78 @@ static void SetStdFrame0OnBg(u8 bgId)
 static void MainMenu_DrawWindow(const struct WindowTemplate * windowTemplate)
 {
     FillBgTilemapBufferRect(
-        windowTemplate->bg, 
-        0x1B1, 
-        windowTemplate->tilemapLeft - 1, 
+        windowTemplate->bg,
+        0x1B1,
+        windowTemplate->tilemapLeft - 1,
         windowTemplate->tilemapTop - 1,
         1,
         1,
         2
     );
     FillBgTilemapBufferRect(
-        windowTemplate->bg, 
-        0x1B2, 
-        windowTemplate->tilemapLeft, 
-        windowTemplate->tilemapTop - 1, 
-        windowTemplate->width, 
-        windowTemplate->height, 
+        windowTemplate->bg,
+        0x1B2,
+        windowTemplate->tilemapLeft,
+        windowTemplate->tilemapTop - 1,
+        windowTemplate->width,
+        windowTemplate->height,
         2
     );
     FillBgTilemapBufferRect(
-        windowTemplate->bg, 
-        0x1B3, 
-        windowTemplate->tilemapLeft + 
-        windowTemplate->width, 
+        windowTemplate->bg,
+        0x1B3,
+        windowTemplate->tilemapLeft +
+        windowTemplate->width,
         windowTemplate->tilemapTop - 1,
         1,
         1,
         2
     );
     FillBgTilemapBufferRect(
-        windowTemplate->bg, 
-        0x1B4, 
-        windowTemplate->tilemapLeft - 1, 
+        windowTemplate->bg,
+        0x1B4,
+        windowTemplate->tilemapLeft - 1,
         windowTemplate->tilemapTop,
-        1, 
+        1,
         windowTemplate->height,
         2
     );
     FillBgTilemapBufferRect(
-        windowTemplate->bg, 
-        0x1B6, 
-        windowTemplate->tilemapLeft + 
-        windowTemplate->width, 
+        windowTemplate->bg,
+        0x1B6,
+        windowTemplate->tilemapLeft +
+        windowTemplate->width,
         windowTemplate->tilemapTop,
-        1, 
+        1,
         windowTemplate->height,
         2
     );
     FillBgTilemapBufferRect(
-        windowTemplate->bg, 
-        0x1B7, 
-        windowTemplate->tilemapLeft - 1, 
-        windowTemplate->tilemapTop + 
+        windowTemplate->bg,
+        0x1B7,
+        windowTemplate->tilemapLeft - 1,
+        windowTemplate->tilemapTop +
         windowTemplate->height,
         1,
         1,
         2
     );
     FillBgTilemapBufferRect(
-        windowTemplate->bg, 
-        0x1B8, 
-        windowTemplate->tilemapLeft, 
-        windowTemplate->tilemapTop + 
-        windowTemplate->height, 
+        windowTemplate->bg,
+        0x1B8,
+        windowTemplate->tilemapLeft,
+        windowTemplate->tilemapTop +
+        windowTemplate->height,
         windowTemplate->width,
         1,
         2
     );
     FillBgTilemapBufferRect(
-        windowTemplate->bg, 
-        0x1B9, 
-        windowTemplate->tilemapLeft + 
-        windowTemplate->width, 
-        windowTemplate->tilemapTop + 
+        windowTemplate->bg,
+        0x1B9,
+        windowTemplate->tilemapLeft +
+        windowTemplate->width,
+        windowTemplate->tilemapTop +
         windowTemplate->height,
         1,
         1,
@@ -833,13 +836,13 @@ static void MainMenu_DrawWindow(const struct WindowTemplate * windowTemplate)
 static void MainMenu_EraseWindow(const struct WindowTemplate * windowTemplate)
 {
     FillBgTilemapBufferRect(
-        windowTemplate->bg, 
-        0x000, 
-        windowTemplate->tilemapLeft - 1, 
-        windowTemplate->tilemapTop - 1,  
-        windowTemplate->tilemapLeft + 
-        windowTemplate->width + 1, 
-        windowTemplate->tilemapTop + 
+        windowTemplate->bg,
+        0x000,
+        windowTemplate->tilemapLeft - 1,
+        windowTemplate->tilemapTop - 1,
+        windowTemplate->tilemapLeft +
+        windowTemplate->width + 1,
+        windowTemplate->tilemapTop +
         windowTemplate->height + 1,
         2
     );

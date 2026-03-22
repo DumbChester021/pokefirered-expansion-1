@@ -1,5 +1,4 @@
 #include "global.h"
-#include "gflib.h"
 #include "bike.h"
 #include "clock.h"
 #include "event_data.h"
@@ -10,6 +9,7 @@
 #include "metatile_behavior.h"
 #include "overworld.h"
 #include "script.h"
+#include "sound.h"
 #include "task.h"
 #include "constants/field_tasks.h"
 #include "constants/metatile_labels.h"

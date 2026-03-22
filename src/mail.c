@@ -1,19 +1,21 @@
 #include "global.h"
-#include "gflib.h"
-#include "scanline_effect.h"
-#include "palette.h"
-#include "text_window.h"
+#include "bg.h"
 #include "easy_chat.h"
-#include "mail.h"
-#include "task.h"
-#include "menu.h"
-#include "player_pc.h"
-#include "overworld.h"
-#include "menu_helpers.h"
+#include "gpu_regs.h"
 #include "graphics.h"
+#include "mail.h"
+#include "malloc.h"
+#include "menu_helpers.h"
+#include "menu.h"
+#include "overworld.h"
+#include "palette.h"
+#include "player_pc.h"
 #include "pokemon_icon.h"
+#include "scanline_effect.h"
 #include "string_util.h"
 #include "strings.h"
+#include "task.h"
+#include "text_window.h"
 #include "constants/items.h"
 
 enum MailIconParam
@@ -527,7 +529,7 @@ static bool8 DoInitMailView(void)
         break;
     case 6:
         ResetBgsAndClearDma3BusyFlags(FALSE);
-        InitBgsFromTemplates(0, sBgTemplates, NELEMS(sBgTemplates));
+        InitBgsFromTemplates(0, sBgTemplates, ARRAY_COUNT(sBgTemplates));
         SetBgTilemapBuffer(1, sMailViewResources->bg1TilemapBuffer);
         SetBgTilemapBuffer(2, sMailViewResources->bg2TilemapBuffer);
         break;

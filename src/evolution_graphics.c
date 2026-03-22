@@ -1,11 +1,12 @@
 #include "global.h"
-#include "gflib.h"
-#include "trig.h"
-#include "random.h"
 #include "decompress.h"
-#include "task.h"
-#include "evolution_scene.h"
 #include "evolution_graphics.h"
+#include "evolution_scene.h"
+#include "palette.h"
+#include "random.h"
+#include "sound.h"
+#include "task.h"
+#include "trig.h"
 #include "constants/songs.h"
 
 static void SpriteCallbackDummy_EvoSparkles(struct Sprite *sprite);
@@ -98,7 +99,7 @@ static void SpriteCallbackDummy_EvoSparkles(struct Sprite *sprite)
 static void SetEvoSparklesMatrices(void)
 {
     u16 i;
-    for (i = 0; i < NELEMS(sEvolutionSparkleMatrixScales); i++)
+    for (i = 0; i < ARRAY_COUNT(sEvolutionSparkleMatrixScales); i++)
         SetOamMatrix(i + 20, sEvolutionSparkleMatrixScales[i], 0, 0, sEvolutionSparkleMatrixScales[i]);
 }
 

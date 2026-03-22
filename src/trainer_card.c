@@ -4,8 +4,8 @@
 #include "easy_chat.h"
 #include "event_data.h"
 #include "frontier_pass.h"
-#include "graphics.h"
 #include "gpu_regs.h"
+#include "graphics.h"
 #include "link.h"
 #include "malloc.h"
 #include "menu.h"
@@ -21,9 +21,10 @@
 #include "task.h"
 #include "trainer_card.h"
 #include "trainer_pokemon_sprites.h"
+#include "trainer.h"
 #include "constants/battle_frontier.h"
-#include "constants/songs.h"
 #include "constants/game_stat.h"
+#include "constants/songs.h"
 #include "constants/trainers.h"
 
 // Trainer Card Strings
@@ -283,18 +284,34 @@ static const u8 sTrainerCardStatColors[] = {TEXT_COLOR_TRANSPARENT, TEXT_COLOR_R
 static const u8 sTimeColonInvisibleTextColors[] = {TEXT_COLOR_TRANSPARENT, TEXT_COLOR_TRANSPARENT, TEXT_COLOR_TRANSPARENT};
 static const u8 sTrainerCardFontIds[] = {FONT_SMALL, FONT_NORMAL, FONT_SMALL};
 
-static const u8 sTrainerPicOffsets[2][GENDER_COUNT][2] =
+static const struct UCoords8 sTrainerPicOffsets[2][GENDER_COUNT] =
 {
     // Kanto
     {
-        [MALE]   = {13, 4},
-        [FEMALE] = {13, 4}
+        [MALE] =
+        {
+            .x = 13,
+            .y = 4.
+        },
+        [FEMALE] =
+        {
+            .x = 13,
+            .y = 4,
+        },
     },
     // Hoenn
     {
-        [MALE]   = {1, 0},
-        [FEMALE] = {1, 0}
-    }
+        [MALE] =
+        {
+            .x = 1,
+            .y = 0,
+        },
+        [FEMALE] =
+        {
+            .x = 1,
+            .y = 0,
+        },
+    },
 };
 
 static const u8 sTrainerPicFacilityClasses[][2] =
@@ -1051,7 +1068,7 @@ static void InitBgsAndWindows(void)
     ResetSpriteData();
     ResetPaletteFade();
     ResetBgsAndClearDma3BusyFlags(0);
-    InitBgsFromTemplates(0, sTrainerCardBgTemplates, NELEMS(sTrainerCardBgTemplates));
+    InitBgsFromTemplates(0, sTrainerCardBgTemplates, ARRAY_COUNT(sTrainerCardBgTemplates));
     ChangeBgX(0, 0, 0);
     ChangeBgY(0, 0, 0);
     ChangeBgX(1, 0, 0);
@@ -1390,7 +1407,7 @@ static void BufferBerryCrushPoints(void)
 {
     if (sTrainerCardDataPtr->cardType != CARD_TYPE_RSE)
     {
-        StringCopy(sTrainerCardDataPtr->strings[TRAINER_CARD_STRING_BERRY_CRUSH], gText_BerryCrushes);
+        StringCopy(sTrainerCardDataPtr->strings[TRAINER_CARD_STRING_BERRY_CRUSH], gText_BerryCrush);
         ConvertIntToDecimalStringN(sTrainerCardDataPtr->strings[TRAINER_CARD_STRING_BERRY_CRUSH_COUNT], sTrainerCardDataPtr->trainerCard.berryCrushPoints, STR_CONV_MODE_RIGHT_ALIGN, 5);
     }
 }
@@ -1447,7 +1464,7 @@ static void LoadMonIconGfx(void)
 {
     u8 i;
 
-    CpuCopy16(gMonIconPalettes, sTrainerCardDataPtr->monIconPals, 2 * NELEMS(sTrainerCardDataPtr->monIconPals));
+    CpuCopy16(gMonIconPalettes, sTrainerCardDataPtr->monIconPals, 2 * ARRAY_COUNT(sTrainerCardDataPtr->monIconPals));
     switch (sTrainerCardDataPtr->trainerCard.monIconTint)
     {
     case MON_ICON_TINT_NORMAL:
@@ -1507,7 +1524,7 @@ static bool8 SetTrainerCardBgsAndPals(void)
     switch (sTrainerCardDataPtr->bgPalLoadState)
     {
     case 0:
-        LoadBgTiles(3, sTrainerCardDataPtr->badgeTiles, NELEMS(sTrainerCardDataPtr->badgeTiles), 0);
+        LoadBgTiles(3, sTrainerCardDataPtr->badgeTiles, ARRAY_COUNT(sTrainerCardDataPtr->badgeTiles), 0);
         break;
     case 1:
         LoadBgTiles(0, sTrainerCardDataPtr->cardTiles, 0x1800, 0);
@@ -1921,10 +1938,7 @@ static void InitTrainerCardData(void)
     sTrainerCardDataPtr->timeColonInvisible = FALSE;
     sTrainerCardDataPtr->onBack = FALSE;
     sTrainerCardDataPtr->flipBlendY = 0;
-    if (GetCardType() == CARD_TYPE_RSE)
-        sTrainerCardDataPtr->cardType = CARD_TYPE_RSE;
-    else
-        sTrainerCardDataPtr->cardType = CARD_TYPE_FRLG;
+    sTrainerCardDataPtr->cardType = GetCardType();
 
     for (i = 0; i < TRAINER_CARD_PROFILE_LENGTH; i++)
         CopyEasyChatWord(sTrainerCardDataPtr->easyChatProfile[i], sTrainerCardDataPtr->trainerCard.rse.easyChatProfile[i]);
@@ -1932,45 +1946,36 @@ static void InitTrainerCardData(void)
 
 static u8 GetCardType(void)
 {
-    if (sTrainerCardDataPtr == NULL)
+    u8 version = sTrainerCardDataPtr == NULL ? gGameVersion : sTrainerCardDataPtr->trainerCard.version;
+
+    switch (version)
     {
-        if (gGameVersion == VERSION_FIRE_RED || gGameVersion == VERSION_LEAF_GREEN)
+        case VERSION_FIRE_RED:
+        case VERSION_LEAF_GREEN:
             return CARD_TYPE_FRLG;
-        else
-            return CARD_TYPE_RSE;
-    }
-    else
-    {
-        if (sTrainerCardDataPtr->trainerCard.version == VERSION_FIRE_RED || sTrainerCardDataPtr->trainerCard.version == VERSION_LEAF_GREEN)
-            return CARD_TYPE_FRLG;
-        else
+        default:
             return CARD_TYPE_RSE;
     }
 }
 
 static void CreateTrainerCardTrainerPic(void)
 {
-    u8 facilityClass = sTrainerPicFacilityClasses[sTrainerCardDataPtr->cardType][sTrainerCardDataPtr->trainerCard.rse.gender];
+    enum TrainerPicID trainerPicId;
+    enum Gender gender = sTrainerCardDataPtr->trainerCard.rse.gender;
+    u8 cardType = sTrainerCardDataPtr->cardType;
+    struct UCoords8 coords = sTrainerPicOffsets[cardType][gender];
 
     if (InUnionRoom() == TRUE && gReceivedRemoteLinkPlayers == 1)
     {
-        facilityClass = sTrainerCardDataPtr->trainerCard.facilityClass;
-        CreateTrainerCardTrainerPicSprite(FacilityClassToPicIndex(facilityClass), TRUE, sTrainerPicOffsets[sTrainerCardDataPtr->cardType][sTrainerCardDataPtr->trainerCard.rse.gender][0],
-                    sTrainerPicOffsets[sTrainerCardDataPtr->cardType][sTrainerCardDataPtr->trainerCard.rse.gender][1], 8, 2);
+        trainerPicId = FacilityClassToPicIndex(sTrainerCardDataPtr->trainerCard.facilityClass);
     }
     else
     {
-        if (sTrainerCardDataPtr->cardType != CARD_TYPE_FRLG)
-        {
-            CreateTrainerCardTrainerPicSprite(FacilityClassToPicIndex(facilityClass), TRUE, sTrainerPicOffsets[sTrainerCardDataPtr->cardType][sTrainerCardDataPtr->trainerCard.rse.gender][0],
-                    sTrainerPicOffsets[sTrainerCardDataPtr->cardType][sTrainerCardDataPtr->trainerCard.rse.gender][1], 8, 2);
-        }
+        if (cardType != CARD_TYPE_FRLG)
+            trainerPicId = FacilityClassToPicIndex(sTrainerPicFacilityClasses[cardType][gender]);
         else
-        {
-            CreateTrainerCardTrainerPicSprite(PlayerGenderToFrontTrainerPicId(sTrainerCardDataPtr->trainerCard.rse.gender), TRUE,
-                    sTrainerPicOffsets[sTrainerCardDataPtr->cardType][sTrainerCardDataPtr->trainerCard.rse.gender][0],
-                    sTrainerPicOffsets[sTrainerCardDataPtr->cardType][sTrainerCardDataPtr->trainerCard.rse.gender][1],
-                    8, 2);
-        }
+            trainerPicId = GetPlayerTrainerPic(gender, GAME_VERSION);
     }
+
+    LoadTrainerFrontPicInWindow(trainerPicId, coords.x, coords.y, 8, 2);
 }

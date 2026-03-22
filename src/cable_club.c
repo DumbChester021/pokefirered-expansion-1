@@ -1,8 +1,7 @@
 #include "global.h"
-#include "gflib.h"
-#include "battle.h"
 #include "battle_records.h"
 #include "battle_setup.h"
+#include "battle.h"
 #include "cable_club.h"
 #include "event_data.h"
 #include "event_scripts.h"
@@ -15,18 +14,21 @@
 #include "menu.h"
 #include "mystery_gift.h"
 #include "overworld.h"
-#include "script.h"
+#include "palette.h"
 #include "script_pokemon_util.h"
+#include "script.h"
+#include "sound.h"
 #include "start_menu.h"
+#include "string_util.h"
 #include "strings.h"
 #include "task.h"
 #include "trade.h"
 #include "trainer_card.h"
 #include "union_room.h"
-#include "constants/songs.h"
 #include "constants/cable_club.h"
 #include "constants/field_weather.h"
 #include "constants/maps.h"
+#include "constants/songs.h"
 
 COMMON_DATA u32 UnusedVarNeededToMatch[8] = {0};
 
@@ -707,6 +709,9 @@ static void Task_StartWirelessCableClubBattle(u8 taskId)
             tState = 5;
         break;
     case 5:
+#if REVISION >= 0xA
+        if (!IsLinkTaskFinished()) break;
+#endif
         SetLinkStandbyCallback();
         tState = 6;
         break;
@@ -909,6 +914,9 @@ static void Task_StartWirelessTrade(u8 taskId)
             tState++;
         break;
     case 2:
+#if REVISION >= 0xA
+        if (!IsLinkTaskFinished()) break;
+#endif
         gSelectedTradeMonPositions[TRADE_PLAYER] = 0;
         gSelectedTradeMonPositions[TRADE_PARTNER] = 0;
         m4aMPlayAllStop();
@@ -978,7 +986,11 @@ bool32 GetSeeingLinkPlayerCardMsg(u8 linkPlayerIndex)
 void Task_WaitForLinkPlayerConnection(u8 taskId)
 {
     struct Task *task = &gTasks[taskId];
+#if REVISION >= 0xA
+    if (++task->tTimer > 480)
+#else
     if (++task->tTimer > 300)
+#endif
     {
         CloseLink();
         SetMainCallback2(CB2_LinkError);

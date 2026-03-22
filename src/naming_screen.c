@@ -1,27 +1,32 @@
 #include "global.h"
-#include "decompress.h"
-#include "gflib.h"
+#include "bg.h"
 #include "data.h"
-#include "keyboard_text.h"
+#include "decompress.h"
 #include "event_data.h"
 #include "event_object_movement.h"
 #include "event_scripts.h"
 #include "field_effect.h"
 #include "field_player_avatar.h"
 #include "field_specials.h"
+#include "gpu_regs.h"
 #include "graphics.h"
+#include "keyboard_text.h"
+#include "malloc.h"
 #include "menu.h"
-#include "overworld.h"
 #include "naming_screen.h"
+#include "overworld.h"
+#include "palette.h"
 #include "pokemon_icon.h"
 #include "pokemon_storage_system.h"
+#include "sound.h"
+#include "string_util.h"
 #include "strings.h"
 #include "task.h"
 #include "text_window.h"
 #include "trig.h"
 #include "constants/event_object_movement.h"
-#include "constants/songs.h"
 #include "constants/event_objects.h"
+#include "constants/songs.h"
 
 enum {
     INPUT_NONE,
@@ -677,7 +682,15 @@ static bool8 MainState_MoveToOKButton(void)
 
 static bool8 MainState_PressedOKButton(void)
 {
+#if REVISION >= 0xA
+    // If the input text matched against the Switch bad words list, do not use it.
+    if (!svc_BadWordCheck(sNamingScreen->textBuffer))
+    {
+        SaveInputText();
+    }
+#else
     SaveInputText();
+#endif
     SetInputState(INPUT_STATE_DISABLED);
     SetCursorFlashing(FALSE);
     TryStartButtonFlash(BUTTON_COUNT, FALSE, TRUE);

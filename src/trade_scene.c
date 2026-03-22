@@ -1,35 +1,39 @@
 #include "global.h"
-#include "gflib.h"
-#include "task.h"
-#include "util.h"
-#include "decompress.h"
-#include "trade.h"
-#include "link.h"
-#include "link_rfu.h"
-#include "mystery_gift.h"
-#include "graphics.h"
-#include "strings.h"
-#include "menu.h"
-#include "data.h"
 #include "battle.h"
-#include "script.h"
+#include "data.h"
+#include "decompress.h"
 #include "event_data.h"
-#include "mail.h"
-#include "pokeball.h"
 #include "evolution_scene.h"
-#include "overworld.h"
 #include "field_fadetransition.h"
-#include "pokedex.h"
-#include "save.h"
+#include "gpu_regs.h"
+#include "graphics.h"
+#include "link_rfu.h"
+#include "link.h"
 #include "load_save.h"
+#include "mail.h"
+#include "malloc.h"
+#include "menu.h"
+#include "mystery_gift.h"
+#include "overworld.h"
+#include "palette.h"
+#include "pokeball.h"
+#include "pokedex.h"
 #include "random.h"
+#include "save.h"
+#include "script.h"
+#include "sound.h"
+#include "string_util.h"
+#include "strings.h"
+#include "task.h"
 #include "trade_scene.h"
-#include "constants/items.h"
+#include "trade.h"
+#include "util.h"
 #include "constants/easy_chat.h"
-#include "constants/party_menu.h"
-#include "constants/songs.h"
-#include "constants/region_map_sections.h"
+#include "constants/items.h"
 #include "constants/moves.h"
+#include "constants/party_menu.h"
+#include "constants/region_map_sections.h"
+#include "constants/songs.h"
 
 // Values for signaling to/from the link partner
 enum {
@@ -2628,25 +2632,37 @@ static void CB2_SaveAndEndTrade(void)
             MysteryGift_TryIncrementStat(CARD_STAT_NUM_TRADES, gLinkPlayers[GetMultiplayerId() ^ 1].trainerId);
         SetContinueGameWarpStatusToDynamicWarp();
         LinkFullSave_Init();
+#if REVISION >= 0xA
+        // No need to wait for a save when the emulator does it fast and synchronously
+        gMain.state = 52;
+#else
         gMain.state++;
+#endif
         sTradeAnim->timer = 0;
         break;
+#if REVISION >= 0xA
+#else
     case 51:
         if (++sTradeAnim->timer == 5)
             gMain.state++;
         break;
+#endif
     case 52:
         if (LinkFullSave_WriteSector())
         {
             ClearContinueGameWarpStatus2();
             gMain.state = 4;
         }
+#if REVISION >= 0xA
+        // Save delay is gone, just write the next sector if save isn't finished
+#else
         else
         {
             // Save isn't finished, delay again
             sTradeAnim->timer = 0;
             gMain.state = 51;
         }
+#endif
         break;
     case 4:
         LinkFullSave_ReplaceLastSector();
@@ -2674,6 +2690,26 @@ static void CB2_SaveAndEndTrade(void)
             sTradeAnim->timer--;
         }
         break;
+#if REVISION >= 0xA
+    case 42:
+        if (IsLinkTaskFinished())
+        {
+            gMain.state = 43;
+        }
+        break;
+    case 43:
+        SetLinkStandbyCallback();
+        gMain.state = 44;
+        break;
+    case 44:
+        if (IsLinkTaskFinished())
+        {
+            LinkFullSave_SetLastSectorSignature();
+            svc_FinishSave();
+            gMain.state = 5;
+        }
+        break;
+#else
     case 42:
         if (IsLinkTaskFinished())
         {
@@ -2681,6 +2717,7 @@ static void CB2_SaveAndEndTrade(void)
             gMain.state = 5;
         }
         break;
+#endif
     case 5:
         if (++sTradeAnim->timer > 60)
         {

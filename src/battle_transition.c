@@ -1,8 +1,10 @@
 #include "global.h"
-#include "battle.h"
-#include "battle_transition.h"
+#include "battle_setup.h"
 #include "battle_transition_frontier.h"
+#include "battle_transition.h"
+#include "battle.h"
 #include "bg.h"
+#include "data.h"
 #include "decompress.h"
 #include "event_object_movement.h"
 #include "field_camera.h"
@@ -18,14 +20,13 @@
 #include "sound.h"
 #include "sprite.h"
 #include "task.h"
+#include "trainer_pokemon_sprites.h"
 #include "trig.h"
 #include "util.h"
-#include "battle_setup.h"
-#include "data.h"
 #include "constants/field_effects.h"
+#include "constants/rgb.h"
 #include "constants/songs.h"
 #include "constants/trainers.h"
-#include "constants/rgb.h"
 
 #define PALTAG_UNUSED_MUGSHOT 0x100A
 
@@ -2867,9 +2868,9 @@ static void Mugshots_CreateTrainerPics(struct Task *task)
 {
     struct Sprite *opponentSpriteA, *opponentSpriteB=0, *playerSprite, *partnerSprite=0;
 
-    u8 trainerAPicId = GetTrainerPicFromId(TRAINER_BATTLE_PARAM.opponentA);
-    u8 trainerBPicId = GetTrainerPicFromId(TRAINER_BATTLE_PARAM.opponentB);
-    u8 partnerPicId = GetTrainerPicFromId(gPartnerTrainerId);
+    enum TrainerPicID trainerAPicId = GetTrainerPicFromId(TRAINER_BATTLE_PARAM.opponentA);
+    enum TrainerPicID trainerBPicId = GetTrainerPicFromId(TRAINER_BATTLE_PARAM.opponentB);
+    enum TrainerPicID partnerPicId = GetTrainerPicFromId(gPartnerTrainerId);
     struct Coords16 mugshotCoordsA = GetTrainerFrontPicMugshotCoords(trainerAPicId);
     s16 opponentARotationScales = 0;
     s16 opponentBRotationScales = 0;

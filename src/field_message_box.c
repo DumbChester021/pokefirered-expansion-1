@@ -1,8 +1,8 @@
 #include "global.h"
 #include "field_message_box.h"
-#include "gflib.h"
 #include "menu.h"
 #include "script.h"
+#include "string_util.h"
 #include "text_window.h"
 
 static EWRAM_DATA u8 sMessageBoxType = 0;

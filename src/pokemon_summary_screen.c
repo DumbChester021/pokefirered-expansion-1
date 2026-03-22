@@ -1,41 +1,45 @@
 #include "global.h"
-#include "gflib.h"
-#include "graphics.h"
-#include "decompress.h"
-#include "pokemon.h"
-#include "pokemon_summary_screen.h"
-#include "task.h"
-#include "menu_helpers.h"
-#include "link.h"
-#include "overworld.h"
-#include "constants/songs.h"
-#include "strings.h"
-#include "menu.h"
-#include "constants/items.h"
-#include "pokemon_sprite_visualizer.h"
-#include "data.h"
-#include "item.h"
-#include "constants/party_menu.h"
-#include "trade.h"
-#include "battle_main.h"
-#include "scanline_effect.h"
-#include "constants/moves.h"
-#include "dynamic_placeholder_text_util.h"
-#include "constants/region_map_sections.h"
-#include "region_map.h"
-#include "field_specials.h"
-#include "party_menu.h"
-#include "constants/battle.h"
-#include "event_data.h"
-#include "trainer_pokemon_sprites.h"
 #include "battle_anim.h"
+#include "battle_interface.h"
+#include "battle_main.h"
+#include "data.h"
+#include "decompress.h"
+#include "dynamic_placeholder_text_util.h"
+#include "event_data.h"
+#include "field_specials.h"
+#include "gpu_regs.h"
+#include "graphics.h"
+#include "item.h"
+#include "link.h"
+#include "malloc.h"
+#include "menu_helpers.h"
+#include "menu.h"
+#include "mon_markings.h"
+#include "overworld.h"
+#include "palette.h"
+#include "party_menu.h"
 #include "pokeball.h"
 #include "pokemon_icon.h"
-#include "battle_interface.h"
-#include "mon_markings.h"
+#include "pokemon_sprite_visualizer.h"
 #include "pokemon_storage_system.h"
+#include "pokemon_summary_screen.h"
+#include "pokemon.h"
 #include "pokerus.h"
+#include "region_map.h"
+#include "scanline_effect.h"
+#include "sound.h"
+#include "string_util.h"
+#include "strings.h"
+#include "task.h"
+#include "trade.h"
+#include "trainer_pokemon_sprites.h"
 #include "constants/battle_move_effects.h"
+#include "constants/battle.h"
+#include "constants/items.h"
+#include "constants/moves.h"
+#include "constants/party_menu.h"
+#include "constants/region_map_sections.h"
+#include "constants/songs.h"
 #include "constants/sound.h"
 
 #define TAG_MOVE_TYPES 30002
@@ -2737,7 +2741,7 @@ static void PokeSum_Setup_InitGpu(void)
     SetGpuReg(REG_OFFSET_DISPCNT, 0);
 
     ResetBgsAndClearDma3BusyFlags(0);
-    InitBgsFromTemplates(0, sBgTempaltes, NELEMS(sBgTempaltes));
+    InitBgsFromTemplates(0, sBgTempaltes, ARRAY_COUNT(sBgTempaltes));
 
     ChangeBgX(0, 0, 0);
     ChangeBgY(0, 0, 0);
@@ -4365,20 +4369,20 @@ static void SpriteCB_PokeSum_MonPicSprite(struct Sprite *sprite)
         {
         case 0:
             sprite->y += sMonPicBounceYDelta_Under60[sMonPicBounceState->animFrame++];
-            arrayLen = NELEMS(sMonPicBounceYDelta_Under60);
+            arrayLen = ARRAY_COUNT(sMonPicBounceYDelta_Under60);
             break;
         case 1:
             sprite->y += sMonPicBounceYDelta_60to80[sMonPicBounceState->animFrame++];
-            arrayLen = NELEMS(sMonPicBounceYDelta_60to80);
+            arrayLen = ARRAY_COUNT(sMonPicBounceYDelta_60to80);
             break;
         case 2:
             sprite->y += sMonPicBounceYDelta_80to99[sMonPicBounceState->animFrame++];
-            arrayLen = NELEMS(sMonPicBounceYDelta_80to99);
+            arrayLen = ARRAY_COUNT(sMonPicBounceYDelta_80to99);
             break;
         case 3:
         default:
             sprite->y += sMonPicBounceYDelta_Full[sMonPicBounceState->animFrame++];
-            arrayLen = NELEMS(sMonPicBounceYDelta_Full);
+            arrayLen = ARRAY_COUNT(sMonPicBounceYDelta_Full);
             break;
         }
 
@@ -4404,7 +4408,7 @@ static void SpriteCB_PokeSum_EggPicShake(struct Sprite *sprite)
         if (sMonPicBounceState->initDelay++ >= 120)
         {
             sprite->x += sEggPicShakeXDelta_ItWillTakeSomeTime[sMonPicBounceState->animFrame];
-            if (++sMonPicBounceState->animFrame >= NELEMS(sEggPicShakeXDelta_ItWillTakeSomeTime))
+            if (++sMonPicBounceState->animFrame >= ARRAY_COUNT(sEggPicShakeXDelta_ItWillTakeSomeTime))
             {
                 sMonPicBounceState->animFrame = 0;
                 sMonPicBounceState->initDelay = 0;
@@ -4416,7 +4420,7 @@ static void SpriteCB_PokeSum_EggPicShake(struct Sprite *sprite)
         if (sMonPicBounceState->initDelay++ >= 90)
         {
             sprite->x += sEggPicShakeXDelta_OccasionallyMoves[sMonPicBounceState->animFrame];
-            if (++sMonPicBounceState->animFrame >= NELEMS(sEggPicShakeXDelta_OccasionallyMoves))
+            if (++sMonPicBounceState->animFrame >= ARRAY_COUNT(sEggPicShakeXDelta_OccasionallyMoves))
             {
                 sMonPicBounceState->animFrame = 0;
                 sMonPicBounceState->initDelay = 0;
@@ -4428,7 +4432,7 @@ static void SpriteCB_PokeSum_EggPicShake(struct Sprite *sprite)
         if (sMonPicBounceState->initDelay++ >= 60)
         {
             sprite->x += sEggPicShakeXDelta_AlmostReadyToHatch[sMonPicBounceState->animFrame];
-            if (++sMonPicBounceState->animFrame >= NELEMS(sEggPicShakeXDelta_AlmostReadyToHatch))
+            if (++sMonPicBounceState->animFrame >= ARRAY_COUNT(sEggPicShakeXDelta_AlmostReadyToHatch))
             {
                 sMonPicBounceState->animFrame = 0;
                 sMonPicBounceState->initDelay = 0;
@@ -4456,7 +4460,7 @@ static void PokeSum_CreateMonPicSprite(void)
     personality = GetMonData(&sMonSummaryScreen->currentMon, MON_DATA_PERSONALITY);
     isShiny = GetMonData(&sMonSummaryScreen->currentMon, MON_DATA_IS_SHINY, NULL);
 
-    spriteId = CreateMonPicSprite(species, isShiny, personality, TRUE, 60, 65, 12, 0xffff);
+    spriteId = CreateMonFrontPicSprite(species, isShiny, personality, 60, 65, 12, TAG_NONE);
     FreeSpriteOamMatrix(&gSprites[spriteId]);
 
     if (!IsMonSpriteNotFlipped(species))

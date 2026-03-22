@@ -1,24 +1,24 @@
 #include "global.h"
-#include "gflib.h"
-#include "battle.h"
 #include "battle_main.h"
 #include "battle_setup.h"
 #include "battle_transition.h"
+#include "battle.h"
 #include "cereader_tool.h"
 #include "easy_chat.h"
 #include "event_data.h"
 #include "item.h"
-#include "main.h"
+#include "malloc.h"
 #include "menu.h"
 #include "overworld.h"
-#include "rtc.h"
+#include "sound.h"
+#include "string_util.h"
 #include "util.h"
 #include "constants/event_objects.h"
 #include "constants/items.h"
 #include "constants/layouts.h"
 #include "constants/songs.h"
-#include "constants/trainers.h"
 #include "constants/trainer_tower.h"
+#include "constants/trainers.h"
 
 #define CURR_FLOOR sTrainerTowerState->data.floors[sTrainerTowerState->floorIdx]
 #define TRAINER_TOWER gSaveBlock1Ptr->trainerTower[gSaveBlock1Ptr->towerChallengeId]
@@ -112,17 +112,17 @@ static const struct SinglesTrainerInfo sSingleBattleTrainerInfo[] = {
     {OBJ_EVENT_GFX_TUBER_M_LAND,   FACILITY_CLASS_RS_TUBER_M,          MALE},
     {OBJ_EVENT_GFX_COOLTRAINER_M,  FACILITY_CLASS_RS_COOLTRAINER_M,    MALE},
     {OBJ_EVENT_GFX_COOLTRAINER_F,  FACILITY_CLASS_RS_COOLTRAINER_F,  FEMALE},
-    {OBJ_EVENT_GFX_SUPER_NERD,     FACILITY_CLASS_HEX_MANIAC,          MALE},
+    {OBJ_EVENT_GFX_POKE_MANIAC,    FACILITY_CLASS_HEX_MANIAC,          MALE},
     {OBJ_EVENT_GFX_WOMAN_2,        FACILITY_CLASS_RS_LADY,           FEMALE},
     {OBJ_EVENT_GFX_BEAUTY,         FACILITY_CLASS_RS_BEAUTY,         FEMALE},
     {OBJ_EVENT_GFX_BOY,            FACILITY_CLASS_RICH_BOY,            MALE},
-    {OBJ_EVENT_GFX_SUPER_NERD,     FACILITY_CLASS_RS_POKEMANIAC,       MALE},
+    {OBJ_EVENT_GFX_POKE_MANIAC,    FACILITY_CLASS_RS_POKEMANIAC,       MALE},
     {OBJ_EVENT_GFX_SWIMMER_M_LAND, FACILITY_CLASS_RS_SWIMMER_M,        MALE},
-    {OBJ_EVENT_GFX_BLACKBELT,      FACILITY_CLASS_RS_BLACK_BELT,       MALE},
+    {OBJ_EVENT_GFX_BLACK_BELT,     FACILITY_CLASS_RS_BLACK_BELT,       MALE},
     {OBJ_EVENT_GFX_ROCKER,         FACILITY_CLASS_GUITARIST,           MALE},
     {OBJ_EVENT_GFX_ROCKER,         FACILITY_CLASS_KINDLER,             MALE},
     {OBJ_EVENT_GFX_CAMPER,         FACILITY_CLASS_RS_CAMPER,           MALE},
-    {OBJ_EVENT_GFX_SUPER_NERD,     FACILITY_CLASS_BUG_MANIAC,          MALE},
+    {OBJ_EVENT_GFX_POKE_MANIAC,    FACILITY_CLASS_BUG_MANIAC,          MALE},
     {OBJ_EVENT_GFX_BOY,            FACILITY_CLASS_RS_PSYCHIC_M,        MALE},
     {OBJ_EVENT_GFX_WOMAN_1,        FACILITY_CLASS_RS_PSYCHIC_F,      FEMALE},
     {OBJ_EVENT_GFX_GENTLEMAN,      FACILITY_CLASS_RS_GENTLEMAN,        MALE},
@@ -137,7 +137,7 @@ static const struct SinglesTrainerInfo sSingleBattleTrainerInfo[] = {
     {OBJ_EVENT_GFX_COOLTRAINER_M,  FACILITY_CLASS_DRAGON_TAMER,        MALE},
     {OBJ_EVENT_GFX_ROCKER,         FACILITY_CLASS_RS_BIRD_KEEPER,      MALE},
     {OBJ_EVENT_GFX_LITTLE_BOY,     FACILITY_CLASS_NINJA_BOY,           MALE},
-    {OBJ_EVENT_GFX_BATTLE_GIRL,    FACILITY_CLASS_BATTLE_GIRL,       FEMALE},
+    {OBJ_EVENT_GFX_CRUSH_GIRL,     FACILITY_CLASS_BATTLE_GIRL,       FEMALE},
     {OBJ_EVENT_GFX_BEAUTY,         FACILITY_CLASS_PARASOL_LADY,      FEMALE},
     {OBJ_EVENT_GFX_SWIMMER_F_LAND, FACILITY_CLASS_RS_SWIMMER_F,      FEMALE},
     {OBJ_EVENT_GFX_PICNICKER,      FACILITY_CLASS_RS_PICNICKER,      FEMALE},
@@ -156,11 +156,11 @@ static const struct SinglesTrainerInfo sSingleBattleTrainerInfo[] = {
     {OBJ_EVENT_GFX_SAILOR,         FACILITY_CLASS_SAILOR,              MALE},
     {OBJ_EVENT_GFX_CAMPER,         FACILITY_CLASS_CAMPER,              MALE},
     {OBJ_EVENT_GFX_PICNICKER,      FACILITY_CLASS_PICNICKER,         FEMALE},
-    {OBJ_EVENT_GFX_SUPER_NERD,     FACILITY_CLASS_POKEMANIAC,          MALE},
-    {OBJ_EVENT_GFX_SUPER_NERD,     FACILITY_CLASS_SUPER_NERD,          MALE},
+    {OBJ_EVENT_GFX_POKE_MANIAC,    FACILITY_CLASS_POKEMANIAC,          MALE},
+    {OBJ_EVENT_GFX_POKE_MANIAC,    FACILITY_CLASS_SUPER_NERD,          MALE},
     {OBJ_EVENT_GFX_HIKER,          FACILITY_CLASS_HIKER,               MALE},
     {OBJ_EVENT_GFX_BIKER,          FACILITY_CLASS_BIKER,               MALE},
-    {OBJ_EVENT_GFX_SUPER_NERD,     FACILITY_CLASS_BURGLAR,             MALE},
+    {OBJ_EVENT_GFX_POKE_MANIAC,    FACILITY_CLASS_BURGLAR,             MALE},
     {OBJ_EVENT_GFX_BALDING_MAN,    FACILITY_CLASS_ENGINEER,            MALE},
     {OBJ_EVENT_GFX_FISHER,         FACILITY_CLASS_FISHERMAN,           MALE},
     {OBJ_EVENT_GFX_SWIMMER_M_LAND, FACILITY_CLASS_SWIMMER_M,           MALE},
@@ -173,14 +173,14 @@ static const struct SinglesTrainerInfo sSingleBattleTrainerInfo[] = {
     {OBJ_EVENT_GFX_ROCKER,         FACILITY_CLASS_JUGGLER,             MALE},
     {OBJ_EVENT_GFX_MAN,            FACILITY_CLASS_TAMER,               MALE},
     {OBJ_EVENT_GFX_ROCKER,         FACILITY_CLASS_BIRD_KEEPER,         MALE},
-    {OBJ_EVENT_GFX_BLACKBELT,      FACILITY_CLASS_BLACK_BELT,          MALE},
+    {OBJ_EVENT_GFX_BLACK_BELT,     FACILITY_CLASS_BLACK_BELT,          MALE},
     {OBJ_EVENT_GFX_SCIENTIST,      FACILITY_CLASS_SCIENTIST,           MALE},
     {OBJ_EVENT_GFX_COOLTRAINER_M,  FACILITY_CLASS_COOLTRAINER_M,       MALE},
     {OBJ_EVENT_GFX_COOLTRAINER_F,  FACILITY_CLASS_COOLTRAINER_F,     FEMALE},
     {OBJ_EVENT_GFX_GENTLEMAN,      FACILITY_CLASS_GENTLEMAN,           MALE},
     {OBJ_EVENT_GFX_CHANNELER,      FACILITY_CLASS_CHANNELER,         FEMALE},
     {OBJ_EVENT_GFX_WOMAN_1,        FACILITY_CLASS_PSYCHIC_F,         FEMALE},
-    {OBJ_EVENT_GFX_BATTLE_GIRL,    FACILITY_CLASS_CRUSH_GIRL,        FEMALE},
+    {OBJ_EVENT_GFX_CRUSH_GIRL,     FACILITY_CLASS_CRUSH_GIRL,        FEMALE},
     {OBJ_EVENT_GFX_TUBER_F,        FACILITY_CLASS_TUBER_F,           FEMALE},
     {OBJ_EVENT_GFX_TUBER_M_LAND,   FACILITY_CLASS_TUBER_M,             MALE},
     {OBJ_EVENT_GFX_WOMAN_2,        FACILITY_CLASS_PKMN_BREEDER_F,    FEMALE},
@@ -202,7 +202,7 @@ static const struct DoublesTrainerInfo sDoubleBattleTrainerInfo[] = {
     {OBJ_EVENT_GFX_LITTLE_GIRL,    OBJ_EVENT_GFX_LITTLE_GIRL,    FACILITY_CLASS_TWINS,           FEMALE, FEMALE},
     {OBJ_EVENT_GFX_COOLTRAINER_M,  OBJ_EVENT_GFX_COOLTRAINER_F,  FACILITY_CLASS_COOL_COUPLE,       MALE, FEMALE},
     {OBJ_EVENT_GFX_BEAUTY,         OBJ_EVENT_GFX_MAN,            FACILITY_CLASS_YOUNG_COUPLE,    FEMALE,   MALE},
-    {OBJ_EVENT_GFX_BATTLE_GIRL,    OBJ_EVENT_GFX_BLACKBELT,      FACILITY_CLASS_CRUSH_KIN,       FEMALE,   MALE},
+    {OBJ_EVENT_GFX_CRUSH_GIRL,     OBJ_EVENT_GFX_BLACK_BELT,     FACILITY_CLASS_CRUSH_KIN,       FEMALE,   MALE},
     {OBJ_EVENT_GFX_SWIMMER_F_LAND, OBJ_EVENT_GFX_TUBER_M_LAND,   FACILITY_CLASS_SIS_AND_BRO,     FEMALE,   MALE}
 };
 
@@ -575,13 +575,13 @@ static void SetTrainerTowerNPCGraphics(void)
     {
     case CHALLENGE_TYPE_SINGLE:
         facilityClass = CURR_FLOOR.trainers[0].facilityClass;
-        for (i = 0; i < NELEMS(sSingleBattleTrainerInfo); i++)
+        for (i = 0; i < ARRAY_COUNT(sSingleBattleTrainerInfo); i++)
         {
             if (sSingleBattleTrainerInfo[i].facilityClass == facilityClass)
                 break;
         }
 
-        if (i != NELEMS(sSingleBattleTrainerInfo))
+        if (i != ARRAY_COUNT(sSingleBattleTrainerInfo))
             trainerGfx1 = sSingleBattleTrainerInfo[i].objGfx;
         else
             trainerGfx1 = OBJ_EVENT_GFX_YOUNGSTER;
@@ -590,12 +590,12 @@ static void SetTrainerTowerNPCGraphics(void)
         break;
     case CHALLENGE_TYPE_DOUBLE:
         facilityClass = CURR_FLOOR.trainers[0].facilityClass;
-        for (i = 0; i < NELEMS(sDoubleBattleTrainerInfo); i++)
+        for (i = 0; i < ARRAY_COUNT(sDoubleBattleTrainerInfo); i++)
         {
             if (sDoubleBattleTrainerInfo[i].facilityClass == facilityClass)
                 break;
         }
-        if (i != NELEMS(sDoubleBattleTrainerInfo))
+        if (i != ARRAY_COUNT(sDoubleBattleTrainerInfo))
         {
             trainerGfx1  = sDoubleBattleTrainerInfo[i].objGfx1;
             trainerGfx2 = sDoubleBattleTrainerInfo[i].objGfx2;
@@ -612,13 +612,13 @@ static void SetTrainerTowerNPCGraphics(void)
         for (j = 0; j < MAX_TRAINERS_PER_FLOOR; j++)
         {
             facilityClass = CURR_FLOOR.trainers[j].facilityClass;
-            for (i = 0; i < NELEMS(sSingleBattleTrainerInfo); i++)
+            for (i = 0; i < ARRAY_COUNT(sSingleBattleTrainerInfo); i++)
             {
                 if (sSingleBattleTrainerInfo[i].facilityClass == facilityClass)
                     break;
             }
 
-            if (i != NELEMS(sSingleBattleTrainerInfo))
+            if (i != ARRAY_COUNT(sSingleBattleTrainerInfo))
                 trainerGfx1 = sSingleBattleTrainerInfo[i].objGfx;
             else
                 trainerGfx1 = OBJ_EVENT_GFX_YOUNGSTER;
@@ -698,21 +698,21 @@ static void TrainerTowerGetOpponentTextColor(u8 challengeType, u8 facilityClass)
     {
     case CHALLENGE_TYPE_SINGLE:
     case CHALLENGE_TYPE_KNOCKOUT:
-        for (i = 0; i < NELEMS(sSingleBattleTrainerInfo); i++)
+        for (i = 0; i < ARRAY_COUNT(sSingleBattleTrainerInfo); i++)
         {
             if (sSingleBattleTrainerInfo[i].facilityClass == facilityClass)
                 break;
         }
-        if (i != NELEMS(sSingleBattleTrainerInfo))
+        if (i != ARRAY_COUNT(sSingleBattleTrainerInfo))
             gender = sSingleBattleTrainerInfo[i].gender;
         break;
     case CHALLENGE_TYPE_DOUBLE:
-        for (i = 0; i < NELEMS(sDoubleBattleTrainerInfo); i++)
+        for (i = 0; i < ARRAY_COUNT(sDoubleBattleTrainerInfo); i++)
         {
             if (sDoubleBattleTrainerInfo[i].facilityClass == facilityClass)
                 break;
         }
-        if (i != NELEMS(sDoubleBattleTrainerInfo))
+        if (i != ARRAY_COUNT(sDoubleBattleTrainerInfo))
         {
             if (VarGet(VAR_TEMP_3))
                 gender = sDoubleBattleTrainerInfo[i].gender2;
@@ -1012,13 +1012,13 @@ static void PlayTrainerTowerEncounterMusic(void)
     u16 idx = VarGet(VAR_TEMP_1);
     u8 facilityClass = CURR_FLOOR.trainers[idx].facilityClass;
 
-    for (i = 0; i < NELEMS(sTrainerEncounterMusicLUT); i++)
+    for (i = 0; i < ARRAY_COUNT(sTrainerEncounterMusicLUT); i++)
     {
         if (sTrainerEncounterMusicLUT[i].facilityClass == gFacilityClassToTrainerClass[facilityClass])
             break;
     }
 
-    if (i != NELEMS(sTrainerEncounterMusicLUT))
+    if (i != ARRAY_COUNT(sTrainerEncounterMusicLUT))
     {
         idx = sTrainerEncounterMusicLUT[i].musicId;
     }

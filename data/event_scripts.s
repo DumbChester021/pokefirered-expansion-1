@@ -33,6 +33,7 @@
 #include "constants/sound.h"
 #include "constants/species.h"
 #include "constants/vars.h"
+#include "constants/field_specials.h"
 #include "constants/battle.h"
 #include "constants/heal_locations.h"
 #include "constants/field_effects.h"
@@ -1104,7 +1105,7 @@ EventScript_ResetAllMapFlags::
 	setflag FLAG_HIDE_CINNABAR_SEAGALLOP
 	setflag FLAG_HIDE_CINNABAR_POKECENTER_BILL
 	setflag FLAG_HIDE_LORELEI_IN_HER_HOUSE
-	setflag FLAG_HIDE_SAFFRON_FAN_CLUB_BLACKBELT
+	setflag FLAG_HIDE_SAFFRON_FAN_CLUB_BLACK_BELT
 	setflag FLAG_HIDE_SAFFRON_FAN_CLUB_ROCKER
 	setflag FLAG_HIDE_SAFFRON_FAN_CLUB_WOMAN
 	setflag FLAG_HIDE_SAFFRON_FAN_CLUB_BEAUTY
@@ -1112,7 +1113,7 @@ EventScript_ResetAllMapFlags::
 	setflag FLAG_HIDE_TWO_ISLAND_GAME_CORNER_BIKER
 	setflag FLAG_HIDE_TWO_ISLAND_WOMAN
 	setflag FLAG_HIDE_TWO_ISLAND_BEAUTY
-	setflag FLAG_HIDE_TWO_ISLAND_SUPER_NERD
+	setflag FLAG_HIDE_TWO_ISLAND_POKE_MANIAC
 	setflag FLAG_HIDE_LOSTELLE_IN_HER_HOME
 	setflag FLAG_HIDE_THREE_ISLAND_LONE_BIKER
 	setflag FLAG_HIDE_FOUR_ISLAND_RIVAL

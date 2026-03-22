@@ -1,15 +1,16 @@
 #include "global.h"
-#include "gflib.h"
 #include "data.h"
 #include "easy_chat.h"
 #include "event_data.h"
 #include "field_message_box.h"
-#include "mystery_gift.h"
-#include "menu.h"
 #include "mail.h"
+#include "malloc.h"
+#include "menu.h"
 #include "move.h"
+#include "mystery_gift.h"
 #include "pokedex.h"
 #include "random.h"
+#include "string_util.h"
 #include "strings.h"
 #include "constants/easy_chat.h"
 
@@ -397,7 +398,7 @@ void InitEasyChatPhrases(void)
     for (i = 0; i < 64; i++)
         gSaveBlock1Ptr->additionalPhrases[i] = 0;
 #else
-    for (i = 0; i < NELEMS(gSaveBlock1Ptr->additionalPhrases); i++)
+    for (i = 0; i < ARRAY_COUNT(gSaveBlock1Ptr->additionalPhrases); i++)
         gSaveBlock1Ptr->additionalPhrases[i] = 0;
 #endif
 }
@@ -625,7 +626,7 @@ static bool8 UnlockedECMonOrMove(u16 wordIndex, u8 groupId)
 static bool32 EC_IsDeoxys(u16 species)
 {
     u32 i;
-    for (i = 0; i < NELEMS(sDeoxysValue); i++)
+    for (i = 0; i < ARRAY_COUNT(sDeoxysValue); i++)
     {
         if (sDeoxysValue[i] == species)
             return TRUE;

@@ -1,26 +1,32 @@
 #include "global.h"
-#include "gflib.h"
+#include "bg.h"
 #include "chooseboxmon.h"
 #include "data.h"
 #include "decompress.h"
+#include "dma3.h"
 #include "dynamic_placeholder_text_util.h"
 #include "event_data.h"
 #include "event_object_movement.h"
 #include "field_fadetransition.h"
 #include "field_weather.h"
+#include "gpu_regs.h"
 #include "graphics.h"
-#include "item.h"
 #include "item_icon.h"
 #include "item_menu.h"
+#include "item.h"
 #include "mail.h"
+#include "malloc.h"
 #include "menu.h"
 #include "mon_markings.h"
 #include "naming_screen.h"
 #include "overworld.h"
+#include "palette.h"
 #include "pc_screen_effect.h"
 #include "pokemon_icon.h"
 #include "pokemon_storage_system.h"
 #include "pokemon_summary_screen.h"
+#include "sound.h"
+#include "string_util.h"
 #include "strings.h"
 #include "task.h"
 #include "text_window.h"
@@ -7506,7 +7512,7 @@ static const u8 *const sMenuTexts[] = {
     [MENU_TEXT_GIVE2]      = gPCText_Give,
     [MENU_TEXT_SWITCH]     = gPCText_Switch,
     [MENU_TEXT_BAG]        = gPCText_Bag,
-    [MENU_TEXT_INFO]       = gPCText_Info,
+    [MENU_TEXT_INFO]       = gText_Info,
     [MENU_TEXT_SCENERY_1]  = gPCText_Scenery1,
     [MENU_TEXT_SCENERY_2]  = gPCText_Scenery2,
     [MENU_TEXT_SCENERY_3]  = gPCText_Scenery3,

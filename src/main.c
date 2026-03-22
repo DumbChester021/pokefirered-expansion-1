@@ -187,6 +187,9 @@ static void InitMainCallbacks(void)
     SetMainCallback2(gInitialMainCB2);
     gSaveBlock2Ptr = &gSaveblock2.block;
     gPokemonStoragePtr = &gPokemonStorage.block;
+#if REVISION >= 0xA
+    svc_SetSaveBlock2(&gSaveBlock2);
+#endif
 }
 
 static void CallCallbacks(void)

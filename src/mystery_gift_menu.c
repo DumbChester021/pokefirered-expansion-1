@@ -1,22 +1,27 @@
 #include "global.h"
-#include "gflib.h"
-#include "task.h"
-#include "scanline_effect.h"
-#include "text_window.h"
-#include "menu.h"
-#include "mystery_gift_menu.h"
-#include "title_screen.h"
-#include "list_menu.h"
-#include "link_rfu.h"
-#include "mystery_gift.h"
-#include "save.h"
-#include "link.h"
-#include "event_data.h"
-#include "mystery_gift_server.h"
-#include "mystery_gift_client.h"
-#include "wonder_news.h"
-#include "strings.h"
+#include "bg.h"
 #include "decompress.h"
+#include "event_data.h"
+#include "gpu_regs.h"
+#include "link_rfu.h"
+#include "link.h"
+#include "list_menu.h"
+#include "malloc.h"
+#include "menu.h"
+#include "mystery_gift_client.h"
+#include "mystery_gift_menu.h"
+#include "mystery_gift_server.h"
+#include "mystery_gift.h"
+#include "palette.h"
+#include "save.h"
+#include "scanline_effect.h"
+#include "sound.h"
+#include "string_util.h"
+#include "strings.h"
+#include "task.h"
+#include "text_window.h"
+#include "title_screen.h"
+#include "wonder_news.h"
 #include "constants/cable_club.h"
 #include "constants/songs.h"
 #include "constants/union_room.h"
@@ -25,7 +30,7 @@ EWRAM_DATA u8 sDownArrowCounterAndYCoordIdx[8] = {};
 EWRAM_DATA bool8 gGiftIsFromEReader = FALSE;
 
 static void CreateMysteryGiftTask(void);
-static void Task_MysteryGift(u8 taskId);
+void Task_MysteryGift(u8 taskId);
 extern void CreateEReaderTask(void);
 
 static const u16 sTextboxBorder_Pal[] = INCBIN_U16("graphics/interface/mystery_gift_textbox_border.gbapal");
@@ -1080,7 +1085,7 @@ static void CreateMysteryGiftTask(void)
     data->clientMsg = AllocZeroed(CLIENT_MAX_MSG_SIZE);
 }
 
-static void Task_MysteryGift(u8 taskId)
+void Task_MysteryGift(u8 taskId)
 {
     struct MysteryGiftTaskData * data = (void *)gTasks[taskId].data;
     bool32 successMsg, input;

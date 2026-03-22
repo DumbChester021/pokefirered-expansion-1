@@ -1,8 +1,10 @@
 #include "global.h"
-#include "gflib.h"
-#include "menu.h"
 #include "list_menu.h"
+#include "malloc.h"
+#include "menu.h"
 #include "player_pc.h"
+#include "sound.h"
+#include "string_util.h"
 #include "strings.h"
 #include "constants/songs.h"
 
@@ -49,7 +51,7 @@ bool8 MailboxPC_InitBuffers(u8 num)
     sListMenuItems = Alloc(sizeof(struct ListMenuItem) * (num + 1));
     if (sListMenuItems == NULL)
         return FALSE;
-    for (i = 0; i < NELEMS(sWindowIds); i++)
+    for (i = 0; i < ARRAY_COUNT(sWindowIds); i++)
         sWindowIds[i] = 0xFF;
     return TRUE;
 }

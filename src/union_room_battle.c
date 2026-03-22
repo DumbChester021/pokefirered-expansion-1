@@ -1,10 +1,12 @@
 #include "global.h"
-#include "gflib.h"
-#include "battle.h"
 #include "battle_setup.h"
+#include "battle.h"
+#include "gpu_regs.h"
 #include "link.h"
+#include "malloc.h"
 #include "menu.h"
 #include "overworld.h"
+#include "palette.h"
 #include "party_menu.h"
 #include "strings.h"
 #include "text_window.h"
@@ -179,16 +181,32 @@ void CB2_UnionRoomBattle(void)
     case 50:
         if (!UpdatePaletteFade())
         {
+#if REVISION >= 0xA
+#else
             SetLinkStandbyCallback();
+#endif
             gMain.state++;
         }
         break;
     case 51:
         if (IsLinkTaskFinished())
         {
+#if REVISION >= 0xA
+            SetLinkStandbyCallback();
+            gMain.state++;
+#else
+            SetMainCallback2(SetUpPartiesAndStartBattle);
+#endif
+        }
+        break;
+#if REVISION >= 0xA
+    case 52:
+        if (IsLinkTaskFinished())
+        {
             SetMainCallback2(SetUpPartiesAndStartBattle);
         }
         break;
+#endif
     case 6:
         if (!gReceivedRemoteLinkPlayers)
         {

@@ -1,14 +1,13 @@
 #include "global.h"
-#include "gflib.h"
 #include "bike.h"
 #include "event_data.h"
 #include "event_object_movement.h"
-#include "fieldmap.h"
 #include "field_camera.h"
 #include "field_control_avatar.h"
-#include "field_effect.h"
 #include "field_effect_helpers.h"
+#include "field_effect.h"
 #include "field_player_avatar.h"
+#include "fieldmap.h"
 #include "follower_npc.h"
 #include "menu.h"
 #include "metatile_behavior.h"
@@ -16,14 +15,15 @@
 #include "party_menu.h"
 #include "random.h"
 #include "script.h"
+#include "sound.h"
 #include "strings.h"
 #include "wild_encounter.h"
 #include "constants/abilities.h"
 #include "constants/event_object_movement.h"
 #include "constants/event_objects.h"
-#include "constants/songs.h"
 #include "constants/metatile_behaviors.h"
 #include "constants/moves.h"
+#include "constants/songs.h"
 #include "constants/trainer_types.h"
 
 static EWRAM_DATA struct ObjectEvent * sPlayerObjectPtr = NULL;
@@ -699,7 +699,7 @@ static void CheckAcroBikeCollision(s16 x, s16 y, u8 metatileBehavior, u8 *collis
 {
     u8 i;
 
-    for (i = 0; i < NELEMS(sAcroBikeTrickMetatiles); i++)
+    for (i = 0; i < ARRAY_COUNT(sAcroBikeTrickMetatiles); i++)
     {
         if (sAcroBikeTrickMetatiles[i](metatileBehavior))
         {
@@ -737,7 +737,7 @@ static void DoPlayerAvatarTransition(void)
 
     if (flags != 0)
     {
-        for (i = 0; i < NELEMS(sPlayerAvatarTransitionFuncs); i++, flags >>= 1)
+        for (i = 0; i < ARRAY_COUNT(sPlayerAvatarTransitionFuncs); i++, flags >>= 1)
         {
             if (flags & 1)
                 sPlayerAvatarTransitionFuncs[i](&gObjectEvents[gPlayerAvatar.objectEventId]);
@@ -1225,7 +1225,7 @@ u8 GetPlayerAvatarStateTransitionByGraphicsId(u16 graphicsId, u8 gender)
 {
     u8 i;
 
-    for (i = 0; i < NELEMS(*sPlayerAvatarGfxToStateFlag); i++)
+    for (i = 0; i < ARRAY_COUNT(*sPlayerAvatarGfxToStateFlag); i++)
     {
         if (sPlayerAvatarGfxToStateFlag[gender][i][0] == graphicsId)
             return sPlayerAvatarGfxToStateFlag[gender][i][1];
@@ -1238,7 +1238,7 @@ u16 GetPlayerAvatarGraphicsIdByCurrentState(void)
     u8 i;
     u8 flags = gPlayerAvatar.flags;
 
-    for (i = 0; i < NELEMS(*sPlayerAvatarGfxToStateFlag); i++)
+    for (i = 0; i < ARRAY_COUNT(*sPlayerAvatarGfxToStateFlag); i++)
     {
         if (sPlayerAvatarGfxToStateFlag[gPlayerAvatar.gender][i][1] & flags)
             return sPlayerAvatarGfxToStateFlag[gPlayerAvatar.gender][i][0];

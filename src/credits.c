@@ -1,17 +1,21 @@
 #include "global.h"
-#include "gflib.h"
+#include "bg.h"
 #include "credits.h"
-#include "task.h"
-#include "overworld.h"
-#include "event_data.h"
 #include "decompress.h"
-#include "graphics.h"
-#include "strings.h"
-#include "trainer_pokemon_sprites.h"
-#include "menu.h"
+#include "event_data.h"
 #include "field_weather.h"
-#include "constants/maps.h"
+#include "gpu_regs.h"
+#include "graphics.h"
+#include "malloc.h"
+#include "menu.h"
+#include "overworld.h"
+#include "palette.h"
+#include "sound.h"
+#include "strings.h"
+#include "task.h"
+#include "trainer_pokemon_sprites.h"
 #include "constants/field_weather.h"
+#include "constants/maps.h"
 #include "constants/sound.h"
 
 #if defined(FIRERED)
@@ -1048,28 +1052,28 @@ static void LoadCreditsMonPic(u8 whichMon)
     case CREDITSMON_CHARIZARD:
         InitWindows(sWindowTemplates_Charizard);
         FillWindowPixelBuffer(0, PIXEL_FILL(0));
-        LoadMonPicInWindow(SPECIES_CHARIZARD, FALSE, 0, TRUE, 10, 0);
+        LoadMonFrontPicInWindow(SPECIES_CHARIZARD, FALSE, 0, 10, 0);
         CopyToWindowPixelBuffer(1, (const void *)sCharizard1_Tiles, 0, 0);
         CopyToWindowPixelBuffer(2, (const void *)sCharizard2_Tiles, 0, 0);
         break;
     case CREDITSMON_VENUSAUR:
         InitWindows(sWindowTemplates_Venusaur);
         FillWindowPixelBuffer(0, PIXEL_FILL(0));
-        LoadMonPicInWindow(SPECIES_VENUSAUR, FALSE, 0, TRUE, 10, 0);
+        LoadMonFrontPicInWindow(SPECIES_VENUSAUR, FALSE, 0, 10, 0);
         CopyToWindowPixelBuffer(1, (const void *)sVenusaur1_Tiles, 0, 0);
         CopyToWindowPixelBuffer(2, (const void *)sVenusaur2_Tiles, 0, 0);
         break;
     case CREDITSMON_BLASTOISE:
         InitWindows(sWindowTemplates_Blastoise);
         FillWindowPixelBuffer(0, PIXEL_FILL(0));
-        LoadMonPicInWindow(SPECIES_BLASTOISE, FALSE, 0, TRUE, 10, 0);
+        LoadMonFrontPicInWindow(SPECIES_BLASTOISE, FALSE, 0, 10, 0);
         CopyToWindowPixelBuffer(1, (const void *)sBlastoise1_Tiles, 0, 0);
         CopyToWindowPixelBuffer(2, (const void *)sBlastoise2_Tiles, 0, 0);
         break;
     case CREDITSMON_PIKACHU:
         InitWindows(sWindowTemplates_Pikachu);
         FillWindowPixelBuffer(0, PIXEL_FILL(0));
-        LoadMonPicInWindow(SPECIES_PIKACHU, FALSE, 0, TRUE, 10, 0);
+        LoadMonFrontPicInWindow(SPECIES_PIKACHU, FALSE, 0, 10, 0);
         CopyToWindowPixelBuffer(1, (const void *)sPikachu1_Tiles, 0, 0);
         CopyToWindowPixelBuffer(2, (const void *)sPikachu2_Tiles, 0, 0);
         break;
@@ -1113,7 +1117,7 @@ static bool32 DoCreditsMonScene(void)
         ResetSpriteData();
         ResetTasks();
         ResetBgsAndClearDma3BusyFlags(1);
-        InitBgsFromTemplates(1, sBgTemplates_MonSceneOrTheEnd, NELEMS(sBgTemplates_MonSceneOrTheEnd));
+        InitBgsFromTemplates(1, sBgTemplates_MonSceneOrTheEnd, ARRAY_COUNT(sBgTemplates_MonSceneOrTheEnd));
         SetBgTilemapBuffer(0, Alloc(BG_SCREEN_SIZE));
         ChangeBgX(0, 0, BG_COORD_SET);
         ChangeBgY(0, 0, BG_COORD_SET);

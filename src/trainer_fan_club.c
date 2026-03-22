@@ -1,9 +1,10 @@
 #include "global.h"
-#include "gflib.h"
 #include "battle.h"
 #include "event_data.h"
 #include "event_scripts.h"
 #include "random.h"
+#include "string_util.h"
+#include "constants/characters.h"
 #include "constants/trainer_fan_club.h"
 
 struct TrainerFanClub
@@ -67,7 +68,7 @@ static void UpdateTrainerFanClubGameClear(struct TrainerFanClub *fanClub)
         SetPlayerGotFirstFans(fanClub);
         SetInitialFansOfPlayer(fanClub);
         VarSet(VAR_FANCLUB_LOSE_FAN_TIMER, gSaveBlock2Ptr->playTimeHours);
-        FlagClear(FLAG_HIDE_SAFFRON_FAN_CLUB_BLACKBELT);
+        FlagClear(FLAG_HIDE_SAFFRON_FAN_CLUB_BLACK_BELT);
         FlagClear(FLAG_HIDE_SAFFRON_FAN_CLUB_ROCKER);
         FlagClear(FLAG_HIDE_SAFFRON_FAN_CLUB_WOMAN);
         FlagClear(FLAG_HIDE_SAFFRON_FAN_CLUB_BEAUTY);

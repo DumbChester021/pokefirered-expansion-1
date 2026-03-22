@@ -1,7 +1,8 @@
 #include "global.h"
-#include "gflib.h"
 #include "decompress.h"
 #include "graphics.h"
+#include "malloc.h"
+#include "palette.h"
 #include "union_room_chat.h"
 
 enum {
@@ -191,7 +192,7 @@ static const struct SpriteTemplate sSpriteTemplate_UnionRoomChatIcons = {
 bool32 UnionRoomChat_TryAllocSpriteWork(void)
 {
     int i;
-    for (i = 0; i < NELEMS(sSpriteSheets); i++)
+    for (i = 0; i < ARRAY_COUNT(sSpriteSheets); i++)
         LoadCompressedSpriteSheet(&sSpriteSheets[i]);
 
     LoadSpritePalette(&sSpritePalette);

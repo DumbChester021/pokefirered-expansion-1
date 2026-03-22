@@ -1,16 +1,22 @@
 #include "global.h"
-#include "gflib.h"
-#include "scanline_effect.h"
-#include "trainer_pokemon_sprites.h"
-#include "text_window.h"
-#include "task.h"
-#include "overworld.h"
+#include "bg.h"
 #include "event_data.h"
 #include "field_fadetransition.h"
 #include "field_weather.h"
-#include "constants/songs.h"
+#include "gpu_regs.h"
+#include "malloc.h"
+#include "overworld.h"
+#include "palette.h"
+#include "scanline_effect.h"
+#include "sound.h"
+#include "sound.h"
+#include "task.h"
+#include "text_window.h"
+#include "trainer_pokemon_sprites.h"
+#include "window.h"
 #include "constants/maps.h"
 #include "constants/seagallop.h"
+#include "constants/songs.h"
 
 #define TILESTAG_FERRY 3000
 #define TILESTAG_WAKE  4000
@@ -196,7 +202,7 @@ static void CB2_SetUpSeagallopScene(void)
         ptr = &sBg3TilemapBuffer;
         *ptr = AllocZeroed(0x800);
         ResetBgsAndClearDma3BusyFlags(0);
-        InitBgsFromTemplates(0, sBGTemplates, NELEMS(sBGTemplates));
+        InitBgsFromTemplates(0, sBGTemplates, ARRAY_COUNT(sBGTemplates));
         SetBgTilemapBuffer(3, *ptr);
         ResetBGPos();
         gMain.state++;
@@ -305,7 +311,7 @@ static void Task_Seagallop_3(void)
 {
     const s8 * warpInfo;
 
-    if (gSpecialVar_0x8006 >= NELEMS(sSeag))
+    if (gSpecialVar_0x8006 >= ARRAY_COUNT(sSeag))
         gSpecialVar_0x8006 = 0;
 
     warpInfo = sSeag[gSpecialVar_0x8006];
@@ -442,7 +448,7 @@ static void SpriteCB_Wake(struct Sprite *sprite)
 
 static bool8 GetDirectionOfTravel(void)
 {
-    if (gSpecialVar_0x8004 >= NELEMS(sTravelDirectionMatrix))
+    if (gSpecialVar_0x8004 >= ARRAY_COUNT(sTravelDirectionMatrix))
     {
         return DIRN_EASTBOUND;
     }

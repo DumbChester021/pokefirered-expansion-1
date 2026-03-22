@@ -1,39 +1,43 @@
 #include "global.h"
-#include "gflib.h"
 #include "apprentice.h"
-#include "battle.h"
 #include "battle_controllers.h"
+#include "battle_main.h"
 #include "battle_pike.h"
 #include "battle_pyramid_bag.h"
 #include "battle_pyramid.h"
-#include "battle_main.h"
+#include "battle.h"
 #include "berry_pouch.h"
 #include "decompress.h"
 #include "event_data.h"
-#include "event_scripts.h"
 #include "event_object_movement.h"
+#include "event_scripts.h"
 #include "field_player_avatar.h"
 #include "field_specials.h"
+#include "gpu_regs.h"
 #include "graphics.h"
 #include "international_string_util.h"
-#include "item.h"
 #include "item_icon.h"
-#include "item_menu.h"
 #include "item_menu_icons.h"
+#include "item_menu.h"
 #include "item_use.h"
+#include "item.h"
 #include "link.h"
 #include "list_menu.h"
 #include "load_save.h"
 #include "mail.h"
+#include "malloc.h"
 #include "map_name_popup.h"
 #include "menu.h"
 #include "money.h"
 #include "overworld.h"
+#include "palette.h"
 #include "party_menu.h"
 #include "pokemon_storage_system.h"
 #include "scanline_effect.h"
 #include "script.h"
 #include "shop.h"
+#include "sound.h"
+#include "string_util.h"
 #include "strings.h"
 #include "teachy_tv.h"
 #include "text_window.h"
@@ -890,7 +894,7 @@ static void BagMenu_InitBGs(void)
     ResetVramOamAndBgCntRegs();
     memset(gBagMenu->tilemapBuffer, 0, sizeof(gBagMenu->tilemapBuffer));
     ResetBgsAndClearDma3BusyFlags(FALSE);
-    InitBgsFromTemplates(0, sBgTemplates_ItemMenu, NELEMS(sBgTemplates_ItemMenu));
+    InitBgsFromTemplates(0, sBgTemplates_ItemMenu, ARRAY_COUNT(sBgTemplates_ItemMenu));
     SetBgTilemapBuffer(1, gBagMenu->tilemapBuffer);
     ResetAllBgsCoordinates();
     ScheduleBgCopyTilemapToVram(1);
@@ -2820,24 +2824,24 @@ static void AddBagSortSubMenu(void)
     {
     case POCKET_KEY_ITEMS:
         gBagMenu->contextMenuItemsPtr = sBagMenuSortKeyItems;
-        memcpy(&gBagMenu->contextMenuItemsBuffer, &sBagMenuSortKeyItems, NELEMS(sBagMenuSortKeyItems));
-        gBagMenu->contextMenuNumItems = NELEMS(sBagMenuSortKeyItems);
+        memcpy(&gBagMenu->contextMenuItemsBuffer, &sBagMenuSortKeyItems, ARRAY_COUNT(sBagMenuSortKeyItems));
+        gBagMenu->contextMenuNumItems = ARRAY_COUNT(sBagMenuSortKeyItems);
         break;
     case POCKET_POKE_BALLS:
         gBagMenu->contextMenuItemsPtr = sBagMenuSortPokeBalls;
-        memcpy(&gBagMenu->contextMenuItemsBuffer, &sBagMenuSortPokeBalls, NELEMS(sBagMenuSortPokeBalls));
-        gBagMenu->contextMenuNumItems = NELEMS(sBagMenuSortPokeBalls);
+        memcpy(&gBagMenu->contextMenuItemsBuffer, &sBagMenuSortPokeBalls, ARRAY_COUNT(sBagMenuSortPokeBalls));
+        gBagMenu->contextMenuNumItems = ARRAY_COUNT(sBagMenuSortPokeBalls);
         break;
     case POCKET_BERRIES:
     case POCKET_TM_HM:
         gBagMenu->contextMenuItemsPtr = sBagMenuSortBerriesTMsHMs;
-        memcpy(&gBagMenu->contextMenuItemsBuffer, &sBagMenuSortBerriesTMsHMs, NELEMS(sBagMenuSortBerriesTMsHMs));
-        gBagMenu->contextMenuNumItems = NELEMS(sBagMenuSortBerriesTMsHMs);
+        memcpy(&gBagMenu->contextMenuItemsBuffer, &sBagMenuSortBerriesTMsHMs, ARRAY_COUNT(sBagMenuSortBerriesTMsHMs));
+        gBagMenu->contextMenuNumItems = ARRAY_COUNT(sBagMenuSortBerriesTMsHMs);
         break;
     default:
         gBagMenu->contextMenuItemsPtr = sBagMenuSortItems;
-        memcpy(&gBagMenu->contextMenuItemsBuffer, &sBagMenuSortItems, NELEMS(sBagMenuSortItems));
-        gBagMenu->contextMenuNumItems = NELEMS(sBagMenuSortItems);
+        memcpy(&gBagMenu->contextMenuItemsBuffer, &sBagMenuSortItems, ARRAY_COUNT(sBagMenuSortItems));
+        gBagMenu->contextMenuNumItems = ARRAY_COUNT(sBagMenuSortItems);
         break;
     }
 

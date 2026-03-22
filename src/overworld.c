@@ -1,8 +1,7 @@
 #include "global.h"
-#include "gflib.h"
 #include "battle_pyramid.h"
-#include "io_reg.h"
 #include "battle_util.h"
+#include "bg.h"
 #include "cable_club.h"
 #include "clock.h"
 #include "credits.h"
@@ -14,8 +13,8 @@
 #include "fake_rtc.h"
 #include "field_camera.h"
 #include "field_control_avatar.h"
-#include "field_effect.h"
 #include "field_effect_helpers.h"
+#include "field_effect.h"
 #include "field_fadetransition.h"
 #include "field_message_box.h"
 #include "field_player_avatar.h"
@@ -26,13 +25,16 @@
 #include "fieldmap.h"
 #include "fldeff.h"
 #include "follower_npc.h"
+#include "gpu_regs.h"
 #include "heal_location.h"
-#include "item.h"
+#include "io_reg.h"
 #include "item_icon.h"
-#include "link.h"
+#include "item.h"
 #include "link_rfu.h"
+#include "link.h"
 #include "load_save.h"
 #include "m4a.h"
+#include "malloc.h"
 #include "map_name_popup.h"
 #include "map_preview_screen.h"
 #include "menu.h"
@@ -40,6 +42,7 @@
 #include "money.h"
 #include "new_game.h"
 #include "overworld.h"
+#include "palette.h"
 #include "play_time.h"
 #include "random.h"
 #include "renewable_hidden_items.h"
@@ -48,9 +51,11 @@
 #include "safari_zone.h"
 #include "save_location.h"
 #include "scanline_effect.h"
-#include "script.h"
 #include "script_pokemon_util.h"
+#include "script.h"
+#include "sound.h"
 #include "start_menu.h"
+#include "string_util.h"
 #include "tileset_anims.h"
 #include "trainer_pokemon_sprites.h"
 #include "vs_seeker.h"
@@ -68,15 +73,20 @@
 #define PLAYER_LINK_STATE_READY 0x82
 #define PLAYER_LINK_STATE_EXITING_ROOM 0x83
 
-#define FACING_NONE 0
-#define FACING_UP 1
-#define FACING_DOWN 2
-#define FACING_LEFT 3
-#define FACING_RIGHT 4
-#define FACING_FORCED_UP 7
-#define FACING_FORCED_DOWN 8
-#define FACING_FORCED_LEFT 9
-#define FACING_FORCED_RIGHT 10
+enum LinkFacing
+{
+    FACING_NONE,
+    FACING_UP,
+    FACING_DOWN,
+    FACING_LEFT,
+    FACING_RIGHT,
+    FACING_UNUSED1,
+    FACING_UNUSED2,
+    FACING_FORCED_UP,
+    FACING_FORCED_DOWN,
+    FACING_FORCED_LEFT,
+    FACING_FORCED_RIGHT,
+};
 
 typedef u16 (*KeyInterCB)(u32 key);
 
@@ -292,7 +302,7 @@ static u8 CountBadgesForOverworldWhiteOutLossCalculation(void)
 {
     int i;
     u8 nbadges = 0;
-    for (i = 0; i < NELEMS(sWhiteOutMoneyLossBadgeFlagIDs); i++)
+    for (i = 0; i < ARRAY_COUNT(sWhiteOutMoneyLossBadgeFlagIDs); i++)
     {
         if (FlagGet(sWhiteOutMoneyLossBadgeFlagIDs[i]))
             nbadges++;
@@ -1350,7 +1360,7 @@ static void InitOverworldBgs(void)
     MoveSaveBlocks_ResetHeap_();
     ResetScreenForMapLoad();
     ResetBgsAndClearDma3BusyFlags(FALSE);
-    InitBgsFromTemplates(0, sOverworldBgTemplates, NELEMS(sOverworldBgTemplates));
+    InitBgsFromTemplates(0, sOverworldBgTemplates, ARRAY_COUNT(sOverworldBgTemplates));
     SetBgAttribute(1, BG_ATTR_MOSAIC, TRUE);
     SetBgAttribute(2, BG_ATTR_MOSAIC, TRUE);
     SetBgAttribute(3, BG_ATTR_MOSAIC, TRUE);
@@ -1368,7 +1378,7 @@ static void InitOverworldBgs(void)
 static void InitOverworldBgs_NoResetHeap(void)
 {
     ResetBgsAndClearDma3BusyFlags(FALSE);
-    InitBgsFromTemplates(0, sOverworldBgTemplates, NELEMS(sOverworldBgTemplates));
+    InitBgsFromTemplates(0, sOverworldBgTemplates, ARRAY_COUNT(sOverworldBgTemplates));
     SetBgAttribute(1, BG_ATTR_MOSAIC, TRUE);
     SetBgAttribute(2, BG_ATTR_MOSAIC, TRUE);
     SetBgAttribute(3, BG_ATTR_MOSAIC, TRUE);
@@ -1656,6 +1666,13 @@ static bool8 RunFieldCallback(void)
 
     return TRUE;
 }
+
+#if REVISION >= 0xA
+void ClearFieldCallback(void)
+{
+    gFieldCallback = NULL;
+}
+#endif
 
 void CB2_NewGame(void)
 {
@@ -2542,21 +2559,17 @@ static u8 (*const sLinkPlayerMovementModes[])(struct LinkPlayerObjectEvent *, st
 // These handlers return TRUE if the movement was scripted and successful, and FALSE otherwise.
 static bool8 (*const sLinkPlayerFacingHandlers[])(struct LinkPlayerObjectEvent *, struct ObjectEvent *, u8) =
 {
-    [DIR_NONE]  = FacingHandler_DoNothing,
-    [DIR_SOUTH] = FacingHandler_DpadMovement,
-    [DIR_NORTH] = FacingHandler_DpadMovement,
-    [DIR_WEST]  = FacingHandler_DpadMovement,
-    [DIR_EAST]  = FacingHandler_DpadMovement,
-};
-
-static bool8 (*const sUnusedLinkPlayerFacingHandlers[])(struct LinkPlayerObjectEvent *, struct ObjectEvent *, u8) =
-{
-    FacingHandler_DoNothing,
-    FacingHandler_DoNothing,
-    FacingHandler_ForcedFacingChange,
-    FacingHandler_ForcedFacingChange,
-    FacingHandler_ForcedFacingChange,
-    FacingHandler_ForcedFacingChange,
+    [FACING_NONE]         = FacingHandler_DoNothing,
+    [FACING_UP]           = FacingHandler_DpadMovement,
+    [FACING_DOWN]         = FacingHandler_DpadMovement,
+    [FACING_LEFT]         = FacingHandler_DpadMovement,
+    [FACING_RIGHT]        = FacingHandler_DpadMovement,
+    [FACING_UNUSED1]      = FacingHandler_DoNothing,
+    [FACING_UNUSED2]      = FacingHandler_DoNothing,
+    [FACING_FORCED_UP]    = FacingHandler_ForcedFacingChange,
+    [FACING_FORCED_DOWN]  = FacingHandler_ForcedFacingChange,
+    [FACING_FORCED_LEFT]  = FacingHandler_ForcedFacingChange,
+    [FACING_FORCED_RIGHT] = FacingHandler_ForcedFacingChange,
 };
 
 // These handlers are run after an attempted movement.
@@ -2768,6 +2781,7 @@ static void UpdateAllLinkPlayers(u16 *keys, s32 selfId)
         HandleLinkPlayerKeyInput(i, key, &player, &setFacing);
         if (sPlayerLinkStates[i] == PLAYER_LINK_STATE_IDLE)
             setFacing = GetDirectionForDpadKey(key);
+
         SetPlayerFacingDirection(i, setFacing);
     }
 }
@@ -3051,7 +3065,8 @@ static bool32 CanCableClubPlayerPressStart(struct CableClubPlayer *player)
 static const u8 *TryGetTileEventScript(struct CableClubPlayer *player)
 {
     if (player->movementMode != MOVEMENT_MODE_SCRIPTED)
-        return FACING_NONE;
+        return NULL;
+
     return GetCoordEventScriptAtMapPosition(&player->pos);
 }
 
@@ -3073,7 +3088,7 @@ static const u8 *TryInteractWithPlayer(struct CableClubPlayer *player)
     u8 linkPlayerId;
 
     if (player->movementMode != MOVEMENT_MODE_FREE && player->movementMode != MOVEMENT_MODE_SCRIPTED)
-        return FACING_NONE;
+        return NULL;
 
     otherPlayerPos = player->pos;
     otherPlayerPos.x += gDirectionToVectors[player->facing].x;
@@ -3256,7 +3271,7 @@ static void ZeroObjectEvent(struct ObjectEvent *objEvent)
 // conflict with the usual Event Object struct, thus the definitions.
 #define linkGender(obj) obj->singleMovementActive
 // not even one can reference *byte* aligned bitfield members...
-#define linkDirection(obj) ((u8 *)obj)[offsetof(typeof(*obj), fieldEffectSpriteId) - 1] // -> rangeX
+#define linkDirection(obj) ((u8 *)obj)[offsetof(typeof(*obj), range)] // -> rangeX
 
 static void SpawnLinkPlayerObjectEvent(u8 linkPlayerId, s16 x, s16 y, u8 gender)
 {

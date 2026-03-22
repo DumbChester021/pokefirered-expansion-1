@@ -1,5 +1,6 @@
 #include "global.h"
-#include "gflib.h"
+#include "string_util.h"
+#include "constants/characters.h"
 #include "constants/event_objects.h"
 
 static EWRAM_DATA const u8 *sStringPointers[8] = {0};
@@ -21,7 +22,7 @@ static const u8 sTextColorTable[] =
     [OBJ_EVENT_GFX_YOUNGSTER / 2]               = COLORS(NPC_TEXT_COLOR_MALE, NPC_TEXT_COLOR_MALE), // OBJ_EVENT_GFX_BOY
     [OBJ_EVENT_GFX_BUG_CATCHER / 2]             = COLORS(NPC_TEXT_COLOR_MALE, NPC_TEXT_COLOR_MALE), // OBJ_EVENT_GFX_SITTING_BOY
     [OBJ_EVENT_GFX_LASS / 2]                    = COLORS(NPC_TEXT_COLOR_FEMALE, NPC_TEXT_COLOR_FEMALE), // OBJ_EVENT_GFX_WOMAN_1
-    [OBJ_EVENT_GFX_BATTLE_GIRL / 2]             = COLORS(NPC_TEXT_COLOR_FEMALE, NPC_TEXT_COLOR_MALE), // OBJ_EVENT_GFX_MAN
+    [OBJ_EVENT_GFX_CRUSH_GIRL / 2]             = COLORS(NPC_TEXT_COLOR_FEMALE, NPC_TEXT_COLOR_MALE), // OBJ_EVENT_GFX_MAN
     [OBJ_EVENT_GFX_ROCKER / 2]                  = COLORS(NPC_TEXT_COLOR_MALE, NPC_TEXT_COLOR_MALE), // OBJ_EVENT_GFX_FAT_MAN
     [OBJ_EVENT_GFX_WOMAN_2 / 2]                 = COLORS(NPC_TEXT_COLOR_FEMALE, NPC_TEXT_COLOR_FEMALE), // OBJ_EVENT_GFX_BEAUTY
     [OBJ_EVENT_GFX_BALDING_MAN / 2]             = COLORS(NPC_TEXT_COLOR_MALE, NPC_TEXT_COLOR_FEMALE), // OBJ_EVENT_GFX_WOMAN_3
@@ -35,8 +36,8 @@ static const u8 sTextColorTable[] =
     [OBJ_EVENT_GFX_SWIMMER_F_LAND / 2]          = COLORS(NPC_TEXT_COLOR_FEMALE, NPC_TEXT_COLOR_MALE), // OBJ_EVENT_GFX_WORKER_M
     [OBJ_EVENT_GFX_WORKER_F / 2]                = COLORS(NPC_TEXT_COLOR_FEMALE, NPC_TEXT_COLOR_MALE), // OBJ_EVENT_GFX_ROCKET_M
     [OBJ_EVENT_GFX_ROCKET_F / 2]                = COLORS(NPC_TEXT_COLOR_FEMALE, NPC_TEXT_COLOR_MALE), // OBJ_EVENT_GFX_GBA_KID
-    [OBJ_EVENT_GFX_SUPER_NERD / 2]              = COLORS(NPC_TEXT_COLOR_MALE, NPC_TEXT_COLOR_MALE), // OBJ_EVENT_GFX_BIKER
-    [OBJ_EVENT_GFX_BLACKBELT / 2]               = COLORS(NPC_TEXT_COLOR_MALE, NPC_TEXT_COLOR_MALE), // OBJ_EVENT_GFX_SCIENTIST
+    [OBJ_EVENT_GFX_POKE_MANIAC / 2]              = COLORS(NPC_TEXT_COLOR_MALE, NPC_TEXT_COLOR_MALE), // OBJ_EVENT_GFX_BIKER
+    [OBJ_EVENT_GFX_BLACK_BELT / 2]               = COLORS(NPC_TEXT_COLOR_MALE, NPC_TEXT_COLOR_MALE), // OBJ_EVENT_GFX_SCIENTIST
     [OBJ_EVENT_GFX_HIKER / 2]                   = COLORS(NPC_TEXT_COLOR_MALE, NPC_TEXT_COLOR_MALE), // OBJ_EVENT_GFX_FISHER
     [OBJ_EVENT_GFX_CHANNELER / 2]               = COLORS(NPC_TEXT_COLOR_FEMALE, NPC_TEXT_COLOR_MALE), // OBJ_EVENT_GFX_CHEF
     [OBJ_EVENT_GFX_POLICEMAN / 2]               = COLORS(NPC_TEXT_COLOR_MALE, NPC_TEXT_COLOR_MALE), // OBJ_EVENT_GFX_GENTLEMAN
@@ -89,20 +90,14 @@ static const u8 sTextColorTable[] =
 
 void DynamicPlaceholderTextUtil_Reset(void)
 {
-    const u8 **ptr = sStringPointers;
-    u8 *fillval = NULL;
-    const u8 **ptr2 = ptr + (NELEMS(sStringPointers) - 1);
-    
-    do
-    {
-        *ptr2-- = fillval;
-    }
-    while ((intptr_t)ptr2 >= (intptr_t)ptr);
+    int i;
+    for (i = 0; i < (int)ARRAY_COUNT(sStringPointers); i++)
+        sStringPointers[i] = NULL;
 }
 
 void DynamicPlaceholderTextUtil_SetPlaceholderPtr(u8 idx, const u8 *ptr)
 {
-    if (idx < NELEMS(sStringPointers))
+    if (idx < ARRAY_COUNT(sStringPointers))
         sStringPointers[idx] = ptr;
 }
 
@@ -136,7 +131,7 @@ u8 GetColorFromTextColorTable(u16 graphicId)
     u32 test = graphicId >> 1;
     u32 shift = (graphicId & 1) << 2;
 
-    if (test >= NELEMS(sTextColorTable))
+    if (test >= ARRAY_COUNT(sTextColorTable))
         return 3;
     else
         return (sTextColorTable[graphicId >> 1] >> shift) & 0xF;
