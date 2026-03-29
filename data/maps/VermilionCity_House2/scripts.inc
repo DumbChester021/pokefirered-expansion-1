@@ -1,0 +1,27 @@
+VermilionCity_House2_MapScripts::
+	.byte 0
+
+VermilionCity_House2_EventScript_Elyssa::
+	lock
+	faceplayer
+	goto_if_set FLAG_DID_CH_DING_TRADE, VermilionCity_House2_EventScript_AlreadyTraded
+	ingame_trade INGAME_TRADE_FARFETCHD, VermilionCity_House2_Text_DoYouHaveMonWantToTradeForMyMon, VermilionCity_House2_EventScript_DeclineTrade, VermilionCity_House2_EventScript_NotRequestedMon, VermilionCity_House2_Text_ThankYou
+	setflag FLAG_DID_CH_DING_TRADE
+	release
+	end
+
+VermilionCity_House2_EventScript_DeclineTrade::
+	msgbox VermilionCity_House2_Text_ThatsTooBad
+	release
+	end
+
+VermilionCity_House2_EventScript_NotRequestedMon::
+	bufferspeciesname STR_VAR_1, VAR_0x8009
+	msgbox VermilionCity_House2_Text_ThisIsNoMon
+	release
+	end
+
+VermilionCity_House2_EventScript_AlreadyTraded::
+	msgbox VermilionCity_House2_Text_HowIsMyOldMon
+	release
+	end

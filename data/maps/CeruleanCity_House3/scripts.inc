@@ -1,0 +1,31 @@
+CeruleanCity_House3_MapScripts::
+	.byte 0
+
+CeruleanCity_House3_EventScript_OldWoman::
+	msgbox CeruleanCity_House3_Text_PleaseTradeWithMyHusband, MSGBOX_NPC
+	end
+
+CeruleanCity_House3_EventScript_Dontae::
+	lock
+	faceplayer
+	goto_if_set FLAG_DID_ZYNX_TRADE, CeruleanCity_House3_EventScript_AlreadyTraded
+	ingame_trade INGAME_TRADE_MEOWTH, Trade_Text_DoYouHaveMonWouldYouTradeForMon, CeruleanCity_House3_EventScript_DeclineTrade, CeruleanCity_House3_EventScript_NotRequestedMon, Trade_Text_Thanks
+	setflag FLAG_DID_ZYNX_TRADE
+	release
+	end
+
+CeruleanCity_House3_EventScript_DeclineTrade::
+	msgbox Trade_Text_WellIfYouDontWantTo
+	release
+	end
+
+CeruleanCity_House3_EventScript_NotRequestedMon::
+	bufferspeciesname STR_VAR_1, VAR_0x8009
+	msgbox Trade_Text_ThisIsntMon
+	release
+	end
+
+CeruleanCity_House3_EventScript_AlreadyTraded::
+	msgbox Trade_Text_HasTradedMonGrownStronger
+	release
+	end

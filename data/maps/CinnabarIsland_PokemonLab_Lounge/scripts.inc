@@ -1,0 +1,56 @@
+CinnabarIsland_PokemonLab_Lounge_MapScripts::
+	.byte 0
+
+CinnabarIsland_PokemonLab_Lounge_EventScript_Scientist::
+	msgbox CinnabarIsland_PokemonLab_Lounge_Text_FoundFossilInMtMoon, MSGBOX_NPC
+	end
+
+CinnabarIsland_PokemonLab_Lounge_EventScript_Clifton::
+	lock
+	faceplayer
+	goto_if_set FLAG_DID_ESPHERE_TRADE, CinnabarIsland_PokemonLab_Lounge_EventScript_CliftonAlreadyTraded
+	ingame_trade INGAME_TRADE_ELECTRODE, Trade_Text_DoYouHaveMonWouldYouTradeForMon, CinnabarIsland_PokemonLab_Lounge_EventScript_CliftonDeclineTrade, CinnabarIsland_PokemonLab_Lounge_EventScript_CliftonNotRequestedMon, Trade_Text_Thanks
+	setflag FLAG_DID_ESPHERE_TRADE
+	release
+	end
+
+CinnabarIsland_PokemonLab_Lounge_EventScript_CliftonDeclineTrade::
+	msgbox Trade_Text_WellIfYouDontWantTo
+	release
+	end
+
+CinnabarIsland_PokemonLab_Lounge_EventScript_CliftonNotRequestedMon::
+	bufferspeciesname STR_VAR_1, VAR_0x8009
+	msgbox Trade_Text_ThisIsntMon
+	release
+	end
+
+CinnabarIsland_PokemonLab_Lounge_EventScript_CliftonAlreadyTraded::
+	msgbox Trade_Text_HasTradedMonGrownStronger
+	release
+	end
+
+CinnabarIsland_PokemonLab_Lounge_EventScript_Norma::
+	lock
+	faceplayer
+	goto_if_set FLAG_DID_TANGENY_TRADE, CinnabarIsland_PokemonLab_Lounge_EventScript_NormaAlreadyTraded
+	ingame_trade INGAME_TRADE_TANGELA, Trade_Text_DoYouHaveMonWantToTradeForMon, CinnabarIsland_PokemonLab_Lounge_EventScript_NormaDeclineTrade, CinnabarIsland_PokemonLab_Lounge_EventScript_NormaNotRequestedMon, Trade_Text_ThanksYoureAPal
+	setflag FLAG_DID_TANGENY_TRADE
+	release
+	end
+
+CinnabarIsland_PokemonLab_Lounge_EventScript_NormaDeclineTrade::
+	msgbox Trade_Text_ThatsTooBad
+	release
+	end
+
+CinnabarIsland_PokemonLab_Lounge_EventScript_NormaNotRequestedMon::
+	bufferspeciesname STR_VAR_1, VAR_0x8009
+	msgbox Trade_Text_ThisIsNoMon
+	release
+	end
+
+CinnabarIsland_PokemonLab_Lounge_EventScript_NormaAlreadyTraded::
+	msgbox Trade_Text_HowIsMyOldMon
+	release
+	end

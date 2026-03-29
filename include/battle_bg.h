@@ -1,0 +1,29 @@
+#ifndef GUARD_BATTLE_BG_H
+#define GUARD_BATTLE_BG_H
+
+#include "bg.h"
+
+struct BattleBackground
+{
+    const void *tileset;
+    const void *tilemap;
+};
+
+struct BattleBackgroundEntry
+{
+    const void *tileset;
+    const void *tilemap;
+};
+
+void InitBattleBgsVideo(void);
+void DrawBattleEntryBackground(void);
+void InitLinkBattleVsScreen(u8 taskId);
+void LoadBattleMenuWindowGfx(void);
+void LoadBattleTextboxAndBackground(void);
+void BattleInitBgsAndWindows(void);
+void DrawMainBattleBackground(void);
+bool8 LoadChosenBattleElement(u8 caseId);
+void DrawTerrainTypeBattleBackground(void);
+const void* GetBattleBackgroundPalette(u16 terrain);
+
+#endif // GUARD_BATTLE_BG_H
