@@ -1296,7 +1296,7 @@ void ShowPokemonSummaryScreen(void *party, u8 cursorPos, u8 lastIdx, MainCallbac
     SetMainCallback2(CB2_SetUpPSS);
 }
 
-void ShowSelectMovePokemonSummaryScreen(struct Pokemon *party, u8 cursorPos, MainCallback savedCallback, u16 move)
+void ShowSelectMovePokemonSummaryScreen(struct Pokemon *party, u8 cursorPos, MainCallback savedCallback, enum Move move)
 {
     ShowPokemonSummaryScreen(party, cursorPos, gPlayerPartyCount - 1, savedCallback, PSS_MODE_SELECT_MOVE);
     sMonSummaryScreen->moveIds[4] = move;

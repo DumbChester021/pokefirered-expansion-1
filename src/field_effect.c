@@ -103,8 +103,8 @@ static const u32 (*const sFieldEffectFuncs[FLDEFF_COUNT]) (void) =
     [FLDEFF_USE_SECRET_POWER_SHRUB]       = FldEff_Nop,
     [FLDEFF_TREE_DISGUISE]                = FldEff_TreeDisguise,
     [FLDEFF_MOUNTAIN_DISGUISE]            = FldEff_MountainDisguise,
-    [FLDEFF_NPCFLY_OUT]                   = FldEff_NpcFlyOut,
-    [FLDEFF_FLY_OUT]                      = FldEff_FlyOut,
+    [FLDEFF_NPCFLY_OUT]                   = FldEff_NPCFlyOut,
+    [FLDEFF_USE_FLY]                      = FldEff_UseFly,
     [FLDEFF_FLY_IN]                       = FldEff_FlyIn,
     [FLDEFF_QUESTION_MARK_ICON_AND_EMOTE] = FldEff_QuestionMarkIcon,
     [FLDEFF_FEET_IN_FLOWING_WATER]        = FldEff_FeetInFlowingWater,
@@ -407,7 +407,7 @@ bool8 FieldEffectActiveListContains(enum FieldEffect fldeff)
     return FALSE;
 }
 
-u8 CreateMonSprite_PicBox(u16 species, s16 x, s16 y, u8 subpriority)
+u8 CreateMonSprite_PicBox(enum Species species, s16 x, s16 y, u8 subpriority)
 {
     u16 spriteId = CreateMonFrontPicSprite(species, FALSE, 0x8000, x, y, 0, species);
     PreservePaletteInWeather(IndexOfSpritePaletteTag(species) + 0x10);
@@ -898,10 +898,10 @@ static void Task_UseFly(u8 taskId)
             gFieldEffectArguments[0] = GetCursorSelectionMonId();
             if ((int)gFieldEffectArguments[0] >= PARTY_SIZE)
                 gFieldEffectArguments[0] = 0;
-            FieldEffectStart(FLDEFF_FLY_OUT);
+            FieldEffectStart(FLDEFF_USE_FLY);
             fieldEffectStarted = TRUE;
         }
-        if (!FieldEffectActiveListContains(FLDEFF_FLY_OUT))
+        if (!FieldEffectActiveListContains(FLDEFF_USE_FLY))
         {
             Overworld_ResetStateAfterFly();
             WarpIntoMap();
@@ -1141,7 +1141,7 @@ static bool8 FallWarpEffect_7(struct Task *task)
     return FALSE;
 }
 
-static void HideFollowerForFieldEffect(void)
+void HideFollowerForFieldEffect(void)
 {
     struct ObjectEvent *followerObj = GetFollowerObject();
     if (!followerObj || followerObj->invisible)
@@ -1598,7 +1598,7 @@ static bool8 DiveFieldEffect_TryWarp(struct Task *task)
     PlayerGetDestCoords(&pos.x, &pos.y);
     if (!FieldEffectActiveListContains(FLDEFF_FIELD_MOVE_SHOW_MON))
     {
-        dive_warp(&pos, gObjectEvents[gPlayerAvatar.objectEventId].currentMetatileBehavior);
+        TryDoDiveWarp(&pos, gObjectEvents[gPlayerAvatar.objectEventId].currentMetatileBehavior);
         DestroyTask(FindTaskIdByFunc(Task_UseDive));
         FieldEffectActiveListRemove(FLDEFF_USE_DIVE);
     }
@@ -2512,15 +2512,13 @@ u32 FldEff_FieldMoveShowMon(void)
     return 0;
 }
 
-#define SHOW_MON_CRY_NO_DUCKING (1 << 31)
-
 u32 FldEff_FieldMoveShowMonInit(void)
 {
     u32 noDucking = gFieldEffectArguments[0] & SHOW_MON_CRY_NO_DUCKING;
     u8 partyIdx = gFieldEffectArguments[0];
-    if (gFieldEffectArguments[0] & NOT_IN_PARTY_MASK)
+    if (gFieldEffectArguments[0] & SHOW_MON_NOT_IN_PARTY)
     {
-        gFieldEffectArguments[0] &= ~NOT_IN_PARTY_MASK;
+        gFieldEffectArguments[0] &= ~SHOW_MON_NOT_IN_PARTY;
         gFieldEffectArguments[1] = FALSE;
         gFieldEffectArguments[2] = SHINY_ODDS;
     }
@@ -3079,7 +3077,7 @@ static void UseVsSeekerEffect_4(struct Task *task)
 
 static void SpriteCB_NPCFlyOut(struct Sprite *sprite);
 
-u32 FldEff_NpcFlyOut(void)
+u32 FldEff_NPCFlyOut(void)
 {
     u8 spriteId = CreateSprite(&gFieldEffectObjectTemplate_Bird, 0x78, 0, 1);
     struct Sprite *sprite = &gSprites[spriteId];
@@ -3154,7 +3152,7 @@ static void (*const sFlyOutFieldEffectFuncs[])(struct Task *) =
     FlyOutFieldEffect_End
 };
 
-u32 FldEff_FlyOut(void)
+u32 FldEff_UseFly(void)
 {
     u8 taskId = CreateTask(Task_FlyOut, 0xFE);
     gTasks[taskId].tMonPartyId = gFieldEffectArguments[0];
@@ -3272,7 +3270,7 @@ static void FlyOutFieldEffect_End(struct Task *task)
 {
     if (!gPaletteFade.active)
     {
-        FieldEffectActiveListRemove(FLDEFF_FLY_OUT);
+        FieldEffectActiveListRemove(FLDEFF_USE_FLY);
         DestroyTask(FindTaskIdByFunc(Task_FlyOut));
     }
 }

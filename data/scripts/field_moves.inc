@@ -376,7 +376,6 @@ Text_LooksLikeNothingHere::
 	.string "Looks like there's nothing here…$"
 
 EventScript_UseRockClimb::
-	goto_if_questlog EventScript_ReleaseEnd
 	lockall
 	checkfieldmoveusable FIELD_MOVE_ROCK_CLIMB
 	goto_if_eq VAR_RESULT, PARTY_SIZE, EventScript_CantRockClimb

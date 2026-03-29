@@ -8,7 +8,7 @@ extern u16 gScrollableMultichoice_ScrollOffset;
 u8 GetLeadMonIndex(void);
 size_t CountDigits(s32 value);
 void TV_PrintIntToStringVar(u8 varidx, s32 number);
-u16 GetStarterSpecies(void);
+enum Species GetStarterSpecies(void);
 void StopPokemonLeagueLightingEffectTask(void);
 void FieldCB_ShowPortholeView(void);
 u8 ContextNpcGetTextColor(void);
