@@ -6,6 +6,7 @@
 *.bak
 *.bat
 *.diff
+diff_output.txt
 *.dump
 *.elf
 *.exe
