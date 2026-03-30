@@ -681,9 +681,30 @@ PewterCity_EventScript_RunningShoesAideTriggerBottom::
 	end
 
 PewterCity_EventScript_AideGiveRunningShoes::
+	goto_if_eq VAR_TEMP_1, 0, PewterCity_EventScript_AideWhiteHerbGive
+	call PewterCity_EventScript_AideNoticePlayer
+	msgbox PewterCity_Text_OhPlayer, MSGBOX_DEFAULT
+	call_if_eq VAR_TEMP_1, 1, PewterCity_EventScript_AideApproachPlayer1
+	call_if_eq VAR_TEMP_1, 2, PewterCity_EventScript_AideApproachPlayer2
+	call_if_eq VAR_TEMP_1, 3, PewterCity_EventScript_AideApproachPlayer3
+PewterCity_EventScript_AideWhiteHerbGive::
+	msgbox PewterCity_Text_AideDeliverWhiteHerb, MSGBOX_DEFAULT
+	checkitemspace ITEM_WHITE_HERB
+	goto_if_eq VAR_RESULT, FALSE, PewterCity_EventScript_AideWhiteHerbNoRoom
+	giveitem_msg PewterCity_Text_ReceivedWhiteHerbFromAide, ITEM_WHITE_HERB
+	msgbox PewterCity_Text_ExplainWhiteHerb, MSGBOX_DEFAULT
+	call_if_eq VAR_TEMP_1, 0, PewterCity_EventScript_AideExit0
+	call_if_eq VAR_TEMP_1, 1, PewterCity_EventScript_AideExit1
+	call_if_eq VAR_TEMP_1, 2, PewterCity_EventScript_AideExit2
+	call_if_eq VAR_TEMP_1, 3, PewterCity_EventScript_AideExit3
 	removeobject LOCALID_PEWTER_AIDE
+	setflag FLAG_HIDE_PEWTER_CITY_RUNNING_SHOES_GUY
 	setvar VAR_MAP_SCENE_PEWTER_CITY, 2
 	return
+PewterCity_EventScript_AideWhiteHerbNoRoom::
+	msgbox Aide_Text_DontHaveAnyRoomForItem
+	releaseall
+	end
 
 PewterCity_EventScript_AideNoticePlayer::
 	applymovement LOCALID_PEWTER_AIDE, Common_Movement_WalkInPlaceFasterDown

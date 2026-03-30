@@ -1111,7 +1111,7 @@ static void Task_BuyMenu(u8 taskId)
             BuyMenuPrintCursor(tListTaskId, 2);
             RecolorItemDescriptionBox(1);
             sShopData.itemPrice = GetItemPrice(itemId);
-            if (ItemId_GetPocket(itemId) == POCKET_TM_HM && CheckBagHasItem(itemId, 1))
+            if (GetItemPocket(itemId) == POCKET_TM_HM && CheckBagHasItem(itemId, 1))
             {
                 BuyMenuDisplayMessage(taskId, gText_YouAlreadyHaveThatTM, BuyMenuReturnToItemList);
             }

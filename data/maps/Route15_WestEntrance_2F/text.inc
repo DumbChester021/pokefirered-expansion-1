@@ -20,12 +20,13 @@ Route15_WestEntrance_2F_Text_ReceivedItemFromAide::
     .string "{PLAYER} received the {STR_VAR_2}\n"
     .string "from the AIDE.$"
 
-Route15_WestEntrance_2F_Text_ExplainExpShare::
-    .string "EXP. SHARE is an item to be held\n"
-    .string "by a POKéMON.\p"
-    .string "The POKéMON will receive a share\n"
-    .string "of the EXP. Points without having\l"
-    .string "to battle.$"
+Route15_WestEntrance_2F_Text_ExplainChoiceBand::
+    .string "CHOICE BAND is a held item that\n"
+    .string "boosts a POKéMON's ATK power.\p"
+    .string "But the POKéMON can only use one\n"
+    .string "move until it switches out!\p"
+    .string "It's a powerful item — use it\n"
+    .string "on your strongest attacker!$"
 
 Route15_WestEntrance_2F_Text_LargeShiningBird::
     .string "Let's see what the binoculars have\n"

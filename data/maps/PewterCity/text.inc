@@ -138,6 +138,22 @@ PewterCity_Text_ExplainRunningShoes::
     .string "Press the B Button to run.\n"
     .string "But only where there's room to run!$"
 
+PewterCity_Text_AideDeliverWhiteHerb::
+    .string "I'm glad I caught up to you.\n"
+    .string "I'm PROF. OAK's AIDE.\p"
+    .string "I've been asked to deliver this\n"
+    .string "to you. Here you go!$"
+
+PewterCity_Text_ReceivedWhiteHerbFromAide::
+    .string "{PLAYER} received the\n"
+    .string "WHITE HERB from the AIDE.$"
+
+PewterCity_Text_ExplainWhiteHerb::
+    .string "WHITE HERB is a held item.\p"
+    .string "If a POKéMON's stats get lowered\n"
+    .string "in battle, it will instantly\l"
+    .string "restore them — just once!$"
+
 PewterCity_Text_MustBeGoingBackToLab::
     .string "Well, I must be going back to\n"
     .string "the LAB.\p"
