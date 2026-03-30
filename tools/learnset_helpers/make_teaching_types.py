@@ -17,7 +17,7 @@ def enabled() -> bool:
     Check if the user has explicitly enabled this opt-in helper.
     """
     with open("./include/config/pokemon.h", "r") as cfg_pokemon_fp:
-        cfg_pokemon = cfg_pokemon_fp.read()
+        cfg_pokemon = cfg_pokemon_fp.read().replace('\\\n', ' ')
         cfg_defined = CONFIG_ENABLED_PAT.search(cfg_pokemon)
         return cfg_defined is not None and cfg_defined.group("cfg_val") in ("TRUE", "1")
 

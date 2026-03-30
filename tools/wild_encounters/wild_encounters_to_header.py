@@ -28,7 +28,18 @@ class Config:
             raise Exception("No fields defined in 'wild_encounters.json'")
 
         with open(config_file_name, 'r') as config_file:
-            lines = config_file.readlines()
+            lines = []
+            buf = ''
+            for raw in config_file.readlines():
+                stripped = raw.rstrip('\n')
+                if stripped.endswith('\\'):
+                    buf += stripped[:-1] + ' '
+                else:
+                    buf += stripped
+                    lines.append(buf + '\n')
+                    buf = ''
+            if buf:
+                lines.append(buf)
             for line in lines:
                 self.ParseSeasonConfig(line)
                 self.ParseTimeConfig(line)
