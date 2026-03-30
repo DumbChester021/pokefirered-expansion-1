@@ -533,7 +533,9 @@ static void PlayerNotOnBikeMoving(u8 direction, u16 heldKeys)
         return;
     }
 
-    if ((heldKeys & B_BUTTON)
+    // B_BUTTON held OR auto-run flag active triggers running
+    // TODO: toggle FLAG_AUTO_RUN via L/R button press in field_control_avatar.c
+    if (((heldKeys & B_BUTTON) || FlagGet(FLAG_AUTO_RUN))
         && !IsRunningDisallowed(gObjectEvents[gPlayerAvatar.objectEventId].currentMetatileBehavior)
         && !FollowerNPCComingThroughDoor())
     {

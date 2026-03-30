@@ -27,7 +27,7 @@
 #define I_GEM_BOOST_POWER                                                      \
   GEN_LATEST // In Gen6+, the Gem boost power was reduced from 50% to 30%.
 #define I_USE_EVO_HELD_ITEMS_FROM_BAG                                          \
-  FALSE // If TRUE, items such as Razor Claw or Electirizer will be usable from
+  TRUE  // If TRUE, items such as Razor Claw or Electirizer will be usable from
         // the bag to evolve a Pokémon just like in LA.
 #define I_TYPE_BOOST_POWER                                                     \
   GEN_LATEST // In Gen4+, all regular type boosting held items had their power

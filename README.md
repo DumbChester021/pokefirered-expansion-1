@@ -47,6 +47,11 @@ The upstream already provides (~95% RHH parity):
 
 | Status | Feature | Description |
 |--------|---------|-------------|
+| `DONE` | **IV/EV Checker** | L/R cycles Stats → IVs → EVs on the summary screen skills page. Shows actual numbers (`P_SUMMARY_SCREEN_IV_EV_INFO TRUE`, `P_SUMMARY_SCREEN_IV_EV_VALUES TRUE`) |
+| `DONE` | **Trade Evolutions Without Trading** | Pure trade evos (Alakazam, Machamp, Gengar, Golem, etc.) use the **Linking Cord** item instead. Held-item trade evos (Metal Coat, Electirizer, etc.) are usable directly from the bag (`I_USE_EVO_HELD_ITEMS_FROM_BAG TRUE`). Nat Dex evolution block already removed. |
+| `DONE` | **Evo Items at Celadon Dept Store 4F** | All evolution stones (incl. Gen 4–8 stones), Linking Cord, and all held-item trade evolution items (Metal Coat, King's Rock, Dragon Scale, Upgrade, Dubious Disc, Electirizer, Magmarizer, Protector, Prism Scale, Reaper Cloth, Deep Sea Tooth/Scale, Razor Claw/Fang) sold on 4F |
+| `DONE` | **Expanded Item Bag** | Items pocket expanded from 42 → 64 slots (save-breaking; `BAG_ITEMS_COUNT`) |
+| `DONE` | **Auto-Run Toggle** | `FLAG_AUTO_RUN` (flag `0x4AB`): when set, player always runs without holding B. Core movement logic patched in `field_player_avatar.c`. **TODO:** wire L-button press in `field_control_avatar.c` to toggle the flag in-game |
 | `TODO` | **LR Box Navigation** | L/R shoulder buttons to switch between PC boxes |
 | `TODO` | **Skip Teachy TV** | Yes/No prompt when aide offers Teachy TV — declining skips the tutorial entirely |
 | `TODO` | **Normal First Rival Battle** | First rival battle in Oak's Lab behaves as a regular battle (no tutorial special rules) |
