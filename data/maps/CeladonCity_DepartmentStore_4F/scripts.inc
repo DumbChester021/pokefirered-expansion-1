@@ -38,7 +38,7 @@ CeladonCity_DepartmentStore_4F_Items::
 	.2byte ITEM_DUSK_STONE
 	.2byte ITEM_DAWN_STONE
 	.2byte ITEM_ICE_STONE
-	@ Trade Evolution Items (usable from bag — no trading needed)
+	@ Trade Evolution Items (usable from bag - no trading needed)
 	.2byte ITEM_LINKING_CORD
 	.2byte ITEM_METAL_COAT
 	.2byte ITEM_KINGS_ROCK

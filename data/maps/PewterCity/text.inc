@@ -152,7 +152,7 @@ PewterCity_Text_ExplainWhiteHerb::
     .string "WHITE HERB is a held item.\p"
     .string "If a POKéMON's stats get lowered\n"
     .string "in battle, it will instantly\l"
-    .string "restore them — just once!$"
+    .string "restore them - just once!$"
 
 PewterCity_Text_MustBeGoingBackToLab::
     .string "Well, I must be going back to\n"

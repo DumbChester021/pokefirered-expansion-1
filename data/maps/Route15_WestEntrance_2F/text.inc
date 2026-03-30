@@ -25,7 +25,7 @@ Route15_WestEntrance_2F_Text_ExplainChoiceBand::
     .string "boosts a POKéMON's ATK power.\p"
     .string "But the POKéMON can only use one\n"
     .string "move until it switches out!\p"
-    .string "It's a powerful item — use it\n"
+    .string "It's a powerful item - use it\n"
     .string "on your strongest attacker!$"
 
 Route15_WestEntrance_2F_Text_LargeShiningBird::
