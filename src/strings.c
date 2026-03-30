@@ -255,6 +255,7 @@ const u8 gText_HereYouGoThankYou[] = _("Here you are!\nThank you!");
 const u8 gText_ThankYouIllSendItHome[] = _("どうも ありがとう!\nじたくの パソコンに おくって おきますね!");
 const u8 gText_ThanksIllSendItHome[] = _("どうも ありがとう!\nじたくの パソコンに おくって おくね!");
 const u8 gText_YouDontHaveMoney[] = _("You don't have enough money.{PAUSE_UNTIL_PRESS}");
+const u8 gText_YouAlreadyHaveThatTM[] = _("You already have that TM.{PAUSE_UNTIL_PRESS}");
 const u8 gText_NoMoreRoomForThis[] = _("You have no more room for this\nitem.{PAUSE_UNTIL_PRESS}");
 const u8 gText_SpaceForVar1Full[] = _("{STR_VAR_1}を\nいれる ばしょが いっぱいです{PAUSE_UNTIL_PRESS}");
 const u8 gText_AnythingElseICanHelp[] = _("Is there anything else I can do?");

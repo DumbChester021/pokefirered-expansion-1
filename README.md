@@ -32,15 +32,15 @@ The upstream already provides (~95% RHH parity):
 
 | Status | Feature | Description |
 |--------|---------|-------------|
-| `TODO` | **Merge `no-ql-and-hs` branch** | Remove Quest Log and Help System from upstream. Frees L/R buttons for RHH battle features (move info, catch prompt) and LR box navigation |
+| `DONE` | **Merge `no-ql-and-hs` branch** | Remove Quest Log and Help System from upstream. Frees L/R buttons for RHH battle features (move info, catch prompt) and LR box navigation |
 
 ### Phase 1: Ports from firered-romhack-1
 
 | Status | Feature | Description |
 |--------|---------|-------------|
-| `TODO` | **TM Shop Logic** | Shops prevent buying TMs you already own; TM28 (Dig) removed from Celadon Dept Store (redundant); TM10 (Hidden Power) added |
-| `TODO` | **Running Shoes from Start** | Running shoes enabled from game start (no item pickup required); aide script after Brock silently removed |
-| `TODO` | **Party Menu Memory Leak Fix** | Fix the tilemap buffer leak in `party_menu.c` that was only commented out, not actually fixed |
+| `DONE` | **TM Shop Logic** | Shops prevent buying TMs you already own; TM28 (Dig) removed from Celadon Dept Store (redundant); TM10 (Hidden Power) added. TMs are reusable, unsellable, and quantity is hidden (`I_REUSABLE_TMS TRUE`) |
+| `DONE` | **Running Shoes from Start** | Running shoes enabled from game start (no item pickup required); aide script after Brock silently removed |
+| `DONE` | **Party Menu Memory Leak Fix** | Fix the tilemap buffer leak in `party_menu.c` that was only commented out, not actually fixed |
 
 ### Phase 2: New QOL Features
 
@@ -58,7 +58,9 @@ The upstream already provides (~95% RHH parity):
 
 ```c
 // include/config/item.h
-I_REUSABLE_TMS          TRUE
+I_REUSABLE_TMS          TRUE           // TMs reusable, unsellable, quantity hidden
+I_EXP_SHARE_FLAG        FLAG_EXP_SHARE // FLAG_0x8F0 — Exp. Share toggles all-party exp
+I_EXP_SHARE_ITEM        GEN_LATEST     // Exp. Share is a Key Item (Gen 6+ style)
 
 // include/config/battle.h
 B_SHOW_EFFECTIVENESS    SHOW_EFFECTIVENESS_SEEN

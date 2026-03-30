@@ -1529,6 +1529,9 @@
 #define FLAG_0x8FE                                                  (SYS_FLAGS + 0xFE)
 #define FLAG_0x8FF                                                  (SYS_FLAGS + 0xFF)
 
+// Custom QOL flags
+#define FLAG_EXP_SHARE                                              FLAG_0x8F0
+
 #define FLAGS_COUNT (FLAG_0x8FF + 1)
 
 // Special Flags (Stored in EWRAM (sSpecialFlags, not in the SaveBlock)

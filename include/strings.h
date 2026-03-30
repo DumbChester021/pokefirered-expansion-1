@@ -863,6 +863,7 @@ extern const u8 gText_AnythingElseICanHelp[];
 extern const u8 gText_QuitShopping[];
 extern const u8 gText_PokedollarVar1[];
 extern const u8 gText_YouDontHaveMoney[];
+extern const u8 gText_YouAlreadyHaveThatTM[];
 extern const u8 gText_Var1CertainlyHowMany[];
 extern const u8 gText_InBagVar1[];
 extern const u8 gText_Var1AndYouWantedVar2[];

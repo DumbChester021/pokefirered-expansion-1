@@ -22,14 +22,17 @@
 #define LOG_HANDLER_MGBA_PRINT (2)
 
 // Use this switch to choose a handler for pretty printing.
-// NOTE: mini_printf supports a custom pretty printing formatter to display preproc encoded strings. (%S)
-//       some libc distributions (especially dkp arm-libc) will fail to link pretty printing.
+// NOTE: mini_printf supports a custom pretty printing formatter to display
+// preproc encoded strings. (%S)
+//       some libc distributions (especially dkp arm-libc) will fail to link
+//       pretty printing.
 #define PRETTY_PRINT_HANDLER (PRETTY_PRINT_MINI_PRINTF)
 
 // Use this switch to choose a handler for printf output.
-// NOTE: These will only work on the respective emulators and should not be used in a productive environment.
-//       Some emulators or real hardware might (and is allowed to) crash if they are used.
-//       AGB_PRINT is supported on respective debug units.
+// NOTE: These will only work on the respective emulators and should not be used
+// in a productive environment.
+//       Some emulators or real hardware might (and is allowed to) crash if they
+//       are used. AGB_PRINT is supported on respective debug units.
 
 #define LOG_HANDLER (LOG_HANDLER_MGBA_PRINT)
 #endif
@@ -67,25 +70,42 @@
 #define GEN_8 7
 #define GEN_9 8
 #define GEN_COUNT 9
-// Changing GEN_LATEST's value to a different Generation will change every default setting that uses it at once.
+// Changing GEN_LATEST's value to a different Generation will change every
+// default setting that uses it at once.
 #define GEN_LATEST GEN_9
 
 // General settings
-#define EXPANSION_INTRO              TRUE    // If TRUE, a custom RHH intro will play after the vanilla copyright screen.
-#define SUMMARY_SCREEN_NATURE_COLORS TRUE    // If TRUE, nature-based stat boosts and reductions will be red and blue in the summary screen.
-#define HQ_RANDOM                    TRUE    // If TRUE, replaces the default RNG with an implementation of SFC32 RNG. May break code that relies on RNG.
-#define AUTO_SCROLL_TEXT             FALSE   // If TRUE, text will automatically scroll to the next line after NUM_FRAMES_AUTO_SCROLL_DELAY. Players can still press A_BUTTON or B_BUTTON to scroll on their own.
+#define EXPANSION_INTRO                                                        \
+  TRUE // If TRUE, a custom RHH intro will play after the vanilla copyright
+       // screen.
+#define SUMMARY_SCREEN_NATURE_COLORS                                           \
+  TRUE // If TRUE, nature-based stat boosts and reductions will be red and blue
+       // in the summary screen.
+#define HQ_RANDOM                                                              \
+  TRUE // If TRUE, replaces the default RNG with an implementation of SFC32 RNG.
+       // May break code that relies on RNG.
+#define AUTO_SCROLL_TEXT                                                       \
+  FALSE // If TRUE, text will automatically scroll to the next line after
+        // NUM_FRAMES_AUTO_SCROLL_DELAY. Players can still press A_BUTTON or
+        // B_BUTTON to scroll on their own.
 #define NUM_FRAMES_AUTO_SCROLL_DELAY 49
 
 // Measurement system constants to be used for UNITS
-#define UNITS_IMPERIAL               0       // Inches, feet, pounds
-#define UNITS_METRIC                 1       // meters, kilograms
+#define UNITS_IMPERIAL 0 // Inches, feet, pounds
+#define UNITS_METRIC 1   // meters, kilograms
 
-#define UNITS                        UNITS_METRIC
-#define CHAR_DEC_SEPARATOR           CHAR_PERIOD // CHAR_PERIOD is used as a decimal separator only in the UK and the US. The rest of the world uses CHAR_COMMA.
+#define UNITS UNITS_METRIC
+#define CHAR_DEC_SEPARATOR                                                     \
+  CHAR_PERIOD // CHAR_PERIOD is used as a decimal separator only in the UK and
+              // the US. The rest of the world uses CHAR_COMMA.
 
 // Naming Screen
-#define AUTO_LOWERCASE_KEYBOARD      GEN_LATEST  // Starting in GEN_6, after entering the first uppercase character, the keyboard switches to lowercase letters.
+#define AUTO_LOWERCASE_KEYBOARD                                                \
+  GEN_LATEST // Starting in GEN_6, after entering the first uppercase character,
+             // the keyboard switches to lowercase letters.
 
-#define SAVE_TYPE_ERROR_SCREEN              FALSE   // When enabled, this shows an error message when the game is loaded on a cart without a flash chip or on an emulator with the wrong save type setting instead of crashing.
+#define SAVE_TYPE_ERROR_SCREEN                                                 \
+  TRUE // When enabled, this shows an error message when the game is loaded on a
+       // cart without a flash chip or on an emulator with the wrong save type
+       // setting instead of crashing.
 #endif // GUARD_CONFIG_GENERAL_H
