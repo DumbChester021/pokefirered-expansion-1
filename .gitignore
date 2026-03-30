@@ -10,7 +10,6 @@
 *.elf
 *.exe
 *.fwjpnfont
-*.gba
 !data/*.gba
 *.sgm
 *.sa1
