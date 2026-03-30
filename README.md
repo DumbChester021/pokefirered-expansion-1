@@ -26,6 +26,25 @@ The upstream already provides (~95% RHH parity):
 - Test framework, debug menus
 - Modular config system (19 headers)
 
+## Gameplay Rebalancing
+
+Separate from QOL features, this fork rebalances the early game to increase difficulty and provide a more engaging experience up to Cerulean Gym.
+
+| Area | Doc |
+|------|-----|
+| Trainer teams, levels, and AI | [docs/trainers.md](docs/trainers.md) |
+| Wild encounter changes (version exclusives merged) | [docs/wild_encounters.md](docs/wild_encounters.md) |
+
+**Summary of changes:**
+- **All trainer AI** upgraded to full competitive AI (Smart Switching, Smart Mon Choices) game-wide
+- **Trainer IVs** normalized to tiered values (0 / 15 / 31 by trainer importance)
+- **Nugget Bridge** trainers scaled to Lv 15–21, with a Rocket Grunt ace at the level cap
+- **Route 25** trainers scaled to Lv 16–18, providing a grind path before Cerulean Gym
+- **Cerulean Gym** trainers buffed; Misty's team redesigned (Psyduck + Goldeen + Starmie)
+- **Version exclusives (Routes 24 & 25):** Oddish and Bellsprout now available in both FireRed and LeafGreen
+
+---
+
 ## QOL Features — Status Tracker
 
 ### Phase 0: Foundation
