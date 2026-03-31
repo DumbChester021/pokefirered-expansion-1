@@ -247,6 +247,21 @@ int ProcessPlayerFieldInput(struct FieldInput *input)
         }
     }
 
+    // Toggle auto-run: B press flips between run/walk mode
+    if (input->pressedBButton)
+    {
+        if (FlagGet(FLAG_AUTO_RUN))
+        {
+            FlagClear(FLAG_AUTO_RUN);
+            PlaySE(SE_PC_OFF);
+        }
+        else
+        {
+            FlagSet(FLAG_AUTO_RUN);
+            PlaySE(SE_PC_ON);
+        }
+    }
+
     if (input->pressedStartButton)
     {
         gFieldInputRecord.pressedStartButton = TRUE;
