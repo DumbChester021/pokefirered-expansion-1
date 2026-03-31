@@ -687,17 +687,20 @@ static bool8 MainState_PressedOKButton(void)
     SetCursorFlashing(FALSE);
     TryStartButtonFlash(BUTTON_COUNT, FALSE, TRUE);
     if (sNamingScreen->templateNum == NAMING_SCREEN_CAUGHT_MON
-        && CalculatePlayerPartyCount() >= PARTY_SIZE)
+        && CalculatePlayerPartyCount() >= PARTY_SIZE
+        && B_CATCH_SWAP_INTO_PARTY < GEN_7)
     {
+        // Show the "transferred to PC" message only when the
+        // catch-swap-into-party feature is NOT active.
+        // When it IS active, Cmd_givecaughtmon will present
+        // the party-swap prompt instead, so skip straight to fade out.
         DisplaySentToPCMessage();
         sNamingScreen->state = STATE_WAIT_SENT_TO_PC_MESSAGE;
         return FALSE;
     }
-    else
-    {
-        sNamingScreen->state = STATE_FADE_OUT;
-        return TRUE;  //Exit the naming screen
-    }
+
+    sNamingScreen->state = STATE_FADE_OUT;
+    return TRUE;  //Exit the naming screen
 }
 
 static bool8 MainState_FadeOut(void)

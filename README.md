@@ -76,6 +76,7 @@ Separate from QOL features, this fork rebalances the early game to increase diff
 | `TODO` | **Normal First Rival Battle** | First rival battle in Oak's Lab behaves as a regular battle (no tutorial special rules) |
 | `TODO` | **Item Usage Animation Removal** | Skip/speed up the animation when using items in battle |
 | `TODO` | **PSS Icon in Move Selection** | Physical/Special/Status category icon displayed next to moves during attack selection |
+| `DONE` | **Catch Swap — Skip Redundant PC Message** | When party is full and `B_CATCH_SWAP_INTO_PARTY >= GEN_7`, the naming screen no longer shows "X was transferred to Box Y" after nicknaming. The battle's party-swap prompt ("Add X to your party?") handles placement, so the prior message was redundant. Fix in `src/naming_screen.c` — `MainState_PressedOKButton`. |
 | `TODO` | **Held Items Not Consumed** | Competitive-style: consumable held items (berries, Focus Sash, etc.) restored after battle |
 | `TODO` | **All Pokémon Obtainable** | Every Pokémon obtainable in-game; evolution blocks (Nat Dex gating) removed |
 
